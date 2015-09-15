@@ -1,0 +1,22 @@
+{
+    "name": "imco/catalogonoms-api",
+    "description": "Application Programing Interface para el Catalogo de Normas oficiales Mexicanas",
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "Emir Herrera",
+            "email": "emir.herrera@imco.org.mx"
+        },
+        {
+			"name": "Hugo Cardoza",
+			"email": "hugo.cardoza@imco.org.mx"
+        }
+    ],
+    "autoload": 
+	{
+		"psr-4": {
+			"IMCO\\CatalogoNOMsApi\\" : "src/"
+		}
+	},
+    "require": {}
+}
