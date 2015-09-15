@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDofTable extends Migration
+class CreateDofDiariosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateDofTable extends Migration
 
     public function up()
     {
-        Schema::connection($this->connection)->create('dof', function (Blueprint $table) {
+        Schema::connection($this->connection)->create('dof_diarios', function (Blueprint $table) {
             $table->integer('cod_diario');
             $table->date('fecha');
             $table->string('edicion');
@@ -30,6 +30,6 @@ class CreateDofTable extends Migration
      */
     public function down()
     {
-        Schema::connection($this->connection)->drop('dof');
+        Schema::connection($this->connection)->drop('dof_diarios');
     }
 }

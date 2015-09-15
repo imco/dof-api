@@ -30,6 +30,13 @@ class DOFClientController extends Controller {
 	protected $connection = 'CatalogoNoms';
 	
 
+	public static function reformatDateString($string){
+		$date = DateTime::createFromFormat('d-M-Y', str_replace(array('Ene','Abr','Ago', 'Dic'),array('Jan','Apr', 'Aug', 'Dec'),$string));
+		$dateReformat = $date->format('d') .'-' . $date->format('n'). '-' . $date->format('Y');
+		
+		return $dateReformat;
+	}
+
 	function getDatesPublishedOnMoth($year,$month=0, $day = 0){
 		//return http_get("http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=$year&month=$month");		
 
@@ -38,7 +45,7 @@ class DOFClientController extends Controller {
 		}
 
 		if ($year<1917 || $year > date("Y") || $month<0 || $month >12 || $day < 0 || $day > 31){
-			die('Invalid date');
+			abort(404);
 		}
 
 		// OK cool - then let's create a new cURL resource handle
@@ -118,10 +125,11 @@ class DOFClientController extends Controller {
 					
 					if ($datePublicacion >=$dateStart && $datePublicacion <=$dateEnd){
 						array_push($result, $publicacion);
-						if ($datePublicacion < $date) {
+						if ($datePublicacion <= $date) {
 							$date = clone $datePublicacion;
-							$date->sub(DateInterval::createFromDateString('1 day'));}
-					}else{
+							$date->sub(DateInterval::createFromDateString('1 day'));
+						}
+					} else{
 						if ($datePublicacion < $dateStart) $finished = true;
 					}
 				}
