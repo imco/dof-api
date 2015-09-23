@@ -1,23 +1,5 @@
 <?php
-/**	 
- *	@SWG\Swagger(
- *		swagger="2.0",
- *		@SWG\Info(
- *	 		title="API del Instituto Mexicano para la Competitividad",
- *			description="<p>Application Programing Interface para acceder a los datos recabados y publicados por el IMCO. Las distintas aplicaciones se distribuyen en paquetes individuales. Esta API cuenta con los siguientes paquetes instalados:</p><ul><li>Catalogo NOMs</li></ul>Copyright (c) 2015 Instituto Mexicano para la Competitividad, A.C.",
- *		 	version = "3.0.0",
- *  	 	@SWG\License(
- * 				name = "GNU GPL 3.0",
- *				url = "http://www.gnu.org/licenses/gpl-3.0.txt"
- *			),
- *			@SWG\Contact(
- *				name = "Emir Herrera González",
- *				url = "http://github.com/emirhg/",
- *				email = "emir.herrera@imco.org.mx"
- *			)
- * 	 	)
- *	)
-*/
+use Swagger\Annotations as SWG;
 
 Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsApi'), function () {
 /**
@@ -98,8 +80,13 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
  */
 
 	Route::group(array('prefix' => 'dof'), function () {
-		Route::get('edicion/{year}/{month?}/{day?}', 'DOFClientController@getDatesPublishedOnMoth');
+		Route::get('edicion/{year}/{month?}/{day?}', 'DOFClientController@getEditionsOnDate');
+		Route::get('sumario/{year}/{month}/{day}', 'DOFClientController@getDateSummary');	
 	});
+
+
+
+	/* BEGIN Old code */
 
 	Route::get('noms', 'CatalogoNOMsController@getNomsPublications');
 	Route::get('dependencia/{dependencia?}', 'CatalogoNOMsController@getNomsListByDependency');
@@ -173,6 +160,8 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 		return json_encode($result);
 
 	});
+
+	/* END OLD CODE */
 
 });
 

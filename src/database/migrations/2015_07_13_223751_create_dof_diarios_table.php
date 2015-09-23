@@ -18,6 +18,8 @@ class CreateDofDiariosTable extends Migration
             $table->integer('cod_diario');
             $table->date('fecha');
             $table->string('edicion');
+            $table->string('availablePdf')->nullable();
+            $table->boolean('invalid')->nullable()->default(false);
             $table->timestamps();
             $table->primary('cod_diario');
         });

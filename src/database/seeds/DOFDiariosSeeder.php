@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use IMCO\CatalogoNOMsApi;
 
+use Response;
+
 class DOFDiariosSeeder extends Seeder
 {
     /**
@@ -14,15 +16,17 @@ class DOFDiariosSeeder extends Seeder
      */
     public function run()
     {
-        
         $dofClient = new DOFClientController;
 
+
+
+
         for ($year=1917 ; $year <= date("Y"); $year++){
-            $dofDiario = $dofClient->getDatesPublishedOnMoth($year)->getData();
+            $dofDiario = $dofClient->getEditionsOnDate($year)->getData();
 
             foreach($dofDiario->list as $diario){
                 $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
-                DofDiario::create((array)$diario);
+                DofDiario::firstOrCreate((array)$diario);
             }
         }
 	}

@@ -32,6 +32,7 @@ class CatalogoNOMsApiServiceProvider extends ServiceProvider {
 		$this->app->make('IMCO\CatalogoNOMsApi\CatalogoNOMsController');
 		$this->app->make('IMCO\CatalogoNOMsApi\DOFClientController');
 		$this->app->make('IMCO\CatalogoNOMsApi\DofDiario');
+		$this->app->make('IMCO\CatalogoNOMsApi\DofNota');
 	}
 
 }

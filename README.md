@@ -13,6 +13,24 @@ Utiliza el Webservice del DOF para copiar la información a una base de datos lo
 * PostgreSQL
 * Laravel 5
 
+### Actualización autmática de la Base de Datos
+Para mantener actualizada la Base de datos se hace uso de la funcionalidad de tareas programadas de Laravel, para ejecutarlo es necesario agregar las siguientes lineas en `app/Console/Kernel.php`
+
+`use IMCO\CatalogoNOMsApi\DOFClientController;`
+
+y dentro del método `schedule`:
+
+    $schedule->call(function () {
+        DOFClientController::fillNotes();
+    })->everyFiveMinutes()->name('fillNotes')->withoutOverlapping();
+
+    $schedule->call(function () {
+        DOFClientController::getTodaysDof();
+    })->hourly();
+
+Agregar la siguiente entrada en Cron
+`* * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1`
+
 ### Base de datos
 
 En el archivo `.env` de la aplicación de Laravel se ha de configurar el ambiente de la Base de Datos utilizando el prefijo `CN` en las variables de ambiente, ejemplo:

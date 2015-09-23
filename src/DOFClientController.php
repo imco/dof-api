@@ -9,7 +9,6 @@ use Input;
 
 use Illuminate\Http\Request;
 
-use Swagger\Annotations as SWG;
 use DateTime;
 use DateInterval;
 
@@ -17,35 +16,88 @@ use DateInterval;
 Para obtener las fechas que tienen publicación en un mes:
 http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=2012&month=08
 
+Con éste podrán conocer a partir de una fecha específica, los códigos de diario de las 99 fechas anteriores, cada una identificada con fecha y edición:
+http://diariooficial.gob.mx/BB_menuPrincipal.php?day=08&month=09&year=2014
+
 Conocer si hay archivo PDF disponible para una fecha específica:
 http://diariooficial.gob.mx/WS_getDiarioPDF.php?day=29&month=08&year=2012&edicion=MAT
 
-Un modelo para obtener el sumario completo del día con un parámetro menos (en éste sólo se pasa el cod_diario):
-diariooficial.gob.mx/BB_DetalleEdicion.php?cod_diario=253279
+Un modelo para obtener el sumario completo de una edición. Los acentos están mal codificacdos, sin embargo aparentemente están todas las notas.
+http://diariooficial.gob.mx/BB_DetalleEdicion.php?cod_diario=253279
 
-Con éste podrán conocer a partir de una fecha específica, los códigos de diario de las 99 fechas anteriores, cada una identificada con fecha y edición:
-http://diariooficial.gob.mx/BB_menuPrincipal.php?day=08&month=09&year=2014
+Sumario completo del día, la codificación es correcta pero algunas notas no aparecen.
+http://diariooficial.gob.mx/WS_getDiarioFull.php?year=2013&month=07&day=31
+
+Nota completa en HTML
+http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308661
 */
+
+
 class DOFClientController extends Controller {
 	protected $connection = 'CatalogoNoms';
 	
 
 	public static function reformatDateString($string){
 		$date = DateTime::createFromFormat('d-M-Y', str_replace(array('Ene','Abr','Ago', 'Dic'),array('Jan','Apr', 'Aug', 'Dec'),$string));
-		$dateReformat = $date->format('d') .'-' . $date->format('n'). '-' . $date->format('Y');
+		$dateReformat = $date->format('Y') .'-' . $date->format('m'). '-' . $date->format('d');
 		
 		return $dateReformat;
 	}
 
-	function getDatesPublishedOnMoth($year,$month=0, $day = 0){
-		//return http_get("http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=$year&month=$month");		
+	/** Busca los 5 diarios más recientes de los que aún no se han obtenido las notas y los inserta en la base de datos, la inserción se hace por bloque de notas para asegurar que se ha insertado el diario completo
+	**/
+	public static function fillNotes(){
+		$diarios = DofDiario::select('dof_diarios.cod_diario')->leftJoin('dof_notas', 'dof_notas.cod_diario', '=', 'dof_diarios.cod_diario')->whereNull('cod_nota')->where('invalid', '=', false)->orderBy('fecha', 'desc')->limit(10)->get();
+		$dofClient = new DOFClientController();
 
-		if (!function_exists('curl_init')){
-		    die('Sorry cURL is not installed!');
+		$cod_diario = array();
+		foreach($diarios AS $diario){
+			array_push($cod_diario, $diario->cod_diario);
 		}
 
-		if ($year<1917 || $year > date("Y") || $month<0 || $month >12 || $day < 0 || $day > 31){
-			abort(404);
+		$diarios = DofDiario::findMany($cod_diario);
+
+		
+		foreach($diarios AS $diario){
+			$diario->invalid = NULL;
+			$diario->availablePdf = $diario->getAvailablePdf();
+			$diario->save();
+		}
+
+		foreach($diarios AS $diario){
+			$newNotes = array();
+			$date = DateTime::createFromFormat('Y-m-d', $diario->fecha);
+
+	        foreach($diario->getSummary() AS $sumario){
+	            array_push($newNotes, array_merge((array)$sumario, array('created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s'))));
+	        }
+
+	        /* Verifica si una nota sin titulo está duplicada y el duplicado contiene el título */
+	        foreach($newNotes AS $key =>$note){
+	        	if ($note['titulo'] == null){
+	        		foreach($newNotes AS $existingNote){
+	        			if ($existingNote['titulo'] != null && $note['seccion'] == $existingNote['seccion'] && $note['pagina']== $existingNote['pagina']){
+	        				unset($newNotes[$key]);
+	        				break;
+	        			}
+	        		}
+	        	}
+	        }
+	        if (count($newNotes) > 0 ){
+		        $newNotes = array_values($newNotes);
+		        DofNota::insert($newNotes);
+		        $diario->invalid=false;
+		        $diario->save();
+		    }elseif ($diario->availablePdf == null){
+		    	$diario->invalid=true;
+		        $diario->save();
+		    }
+		}
+	}
+
+	public static function http_get($url){
+		if (!function_exists('curl_init')){
+		    die('Sorry cURL is not installed!');
 		}
 
 		// OK cool - then let's create a new cURL resource handle
@@ -54,7 +106,7 @@ class DOFClientController extends Controller {
 		// Now set some options (most are optional)
 
 		// Set URL to download
-		curl_setopt($ch, CURLOPT_URL, "http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=$year&month=$month");
+		curl_setopt($ch, CURLOPT_URL, $url);
 
 		// Set a referer
 		//curl_setopt($ch, CURLOPT_REFERER, "http://www.example.org/yay.htm");
@@ -72,20 +124,65 @@ class DOFClientController extends Controller {
 		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
 		// Download the given URL, and return output
-		$output = json_decode(curl_exec($ch));
+		$output = curl_exec($ch);
+
+		// Close the cURL resource, and free system resources
+		curl_close($ch);
+
+		return $output;
+	}
+
+	public static function getHttpCode($url){
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_FILETIME, true);
+		curl_setopt($curl, CURLOPT_NOBODY, true);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		$header = curl_exec($curl);
+		$info = curl_getinfo($curl);
+		curl_close($curl);
+		return $info['http_code'];
+	}
+
+
+	public static function getTodaysDof(){
+
+		$dofClient = new DOFClientController;
+
+        $dofDiario = $dofClient->getEditionsOnDate(date("Y"), date("m"), date("d"))->getData();
+
+        foreach($dofDiario->list as $diario){
+            $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
+            $diario = DofDiario::firstOrCreate((array)$diario);
+            if($diario->availablePdf == null){
+            	$diario->updateAvailablePdf();	
+            }
+        }
+
+        return $diario;
+	}
+
+	function getEditionsOnDate($year,$month=0, $day = 0){
+		//return http_get("http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=$year&month=$month");		
+		if (!function_exists('curl_init')){
+		    abort(500);
+		}
+
+		if ($year<1917 || $year > date("Y") || $month<0 || $month >12 || $day < 0 || $day > 31){
+			abort(404);
+		}
 
 		$meses = array("Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic");
 		$date = DateTime::createFromFormat('d-m-Y', "$day-$month-$year");
 		$dateStr = $date->format('d') .'-' . $meses[$date->format('n')-1] . '-' . $date->format('Y');
 
+		$output = json_decode(self::http_get("http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=$year&month=$month"));
+
 		if($day!=0) {
 			if (in_array($day, $output->availableDays)){
 				$result = array();
-				
-
-				curl_setopt($ch, CURLOPT_URL, "http://diariooficial.gob.mx/BB_menuPrincipal.php?day=". $date->format('d') ."&month=" . $date->format('n') ."&year=" . $date->format('Y'));
-				
-				$output = json_decode(curl_exec($ch));
+								
+				$output = json_decode(self::http_get("http://diariooficial.gob.mx/BB_menuPrincipal.php?day=". $date->format('d') ."&month=" . $date->format('n') ."&year=" . $date->format('Y')));
 				foreach($output->list AS $publicacion){
 					
 					$datePublicacion = DateTime::createFromFormat('d-M-Y', str_replace(array('Ene','Abr','Ago', 'Dic'),array('Jan','Apr', 'Aug', 'Dec'),$publicacion->fecha));
@@ -113,11 +210,8 @@ class DOFClientController extends Controller {
 			$date = clone $dateEnd;
 			$finished = false;
 
-			//print_r ($dateStart->format('d-M-Y') . "\t" . $dateEnd->format('d-M-Y'));
 			while (!$finished){
-				curl_setopt($ch, CURLOPT_URL, "http://diariooficial.gob.mx/BB_menuPrincipal.php?day=". $date->format('d') ."&month=" . $date->format('n') ."&year=" . $date->format('Y'));
-					
-				$output = json_decode(curl_exec($ch));
+				$output = json_decode(self::http_get("http://diariooficial.gob.mx/BB_menuPrincipal.php?day=". $date->format('d') ."&month=" . $date->format('n') ."&year=" . $date->format('Y')));
 				foreach($output->list AS $publicacion){
 					
 					$datePublicacion = DateTime::createFromFormat('d-M-Y', str_replace(array('Ene','Abr','Ago', 'Dic'),array('Jan','Apr', 'Aug', 'Dec'),$publicacion->fecha));
@@ -136,8 +230,7 @@ class DOFClientController extends Controller {
 			}
 
 		}
-		// Close the cURL resource, and free system resources
-		curl_close($ch);
+		
 		return response::json(array('total'=> count($result), 'list'=>$result));
 	}
 
