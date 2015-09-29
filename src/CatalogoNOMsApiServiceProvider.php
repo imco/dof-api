@@ -19,6 +19,7 @@ class CatalogoNOMsApiServiceProvider extends ServiceProvider {
 		$this->publishes([__DIR__.'/database/seeds' => base_path('database/seeds')]);
 		
 		Config::set('database.connections.CatalogoNoms' , Config::get('catalogonoms.database.connections.CatalogoNoms'));
+		Config::set('database.connections.CatalogoNomsOld' , Config::get('catalogonoms.database.connections.CatalogoNomsOld'));
 	}
 
 	/**
