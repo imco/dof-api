@@ -10,7 +10,7 @@ use Input;
 use Illuminate\Http\Request;
 
 class CatalogoNOMsController extends Controller {
-	protected $connection = 'CatalogoNoms';
+	protected $connection = 'CatalogoNomsOld';
 	
 	public function getNomsPublications(){
 		return json_encode(DB::connection($connection)->select(DB::raw("WITH fechaPublicacion AS (SELECT trim(both '-' FROM substring(clavenomnorm from '-.*-')) subclavenomnorm, max(fecha) AS fecha_nom, NULL::date AS fecha_modificacion FROM notasnom  WHERE etiqueta= 'NOM' GROUP BY trim(both '-' FROM substring(clavenomnorm from '-.*-'))),

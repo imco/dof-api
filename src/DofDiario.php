@@ -58,30 +58,42 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 				foreach($seccion->organismos AS $organismo){
 					foreach($organismo->contentSecretearias AS $contentSecretaria){
 						foreach($contentSecretaria->contentDecretos AS $contentDecreto){
-							$decretoFull = DOFClientController::http_get('http://diariooficial.gob.mx/nota_detalle_popup.php?codigo='. $contentDecreto->cod_nota);
-							
-							$matches = array();
-							preg_match('/<!DOCTYPE HTML .* <\/HTML>/', $decretoFull, $matches);
-							if ($matches){
-								$decretoFull = $matches[0];
-								$decretoFull = $testHTML = preg_replace('/(&#\d{4});?/', '\1;', $decretoFull);
-								
-								try{
-									$decretoDOM = new DOMDocument();
-									libxml_use_internal_errors(true);
+							$decretoFull = NULL;
+					    	$tries = 5;
+							while (strlen($decretoFull)<=1 && $tries>0){
+								$decretoFull = DOFClientController::http_get('http://diariooficial.gob.mx/nota_detalle_popup.php?codigo='. $this->cod_nota);
 
-									$decretoDOM->loadHtml($decretoFull);
-									libxml_clear_errors();
-
-									$h1 = $decretoDOM->getElementsByTagName('h1');
-									if ($h1->length >0 ){
-										$contentDecreto->tituloDecreto = trim(preg_replace('/\s+/',' ',html_entity_decode($h1->item(0)->nodeValue)));
-									}										
-								} catch(ErrorException $exception ){
-
+								$matches = array();
+								preg_match('/<!DOCTYPE HTML .* <\/HTML>/', $decretoFull, $matches);
+								if (!$matches && strlen($decretoFull)>0){
+									$matches[0] = $decretoFull;
 								}
-							}else{
-								$decretoFull= null;
+								if ($matches){
+									$decretoFull = $matches[0];
+									$decretoFull = $testHTML = preg_replace('/(&#\d{4});?/', '\1;', $decretoFull);
+									
+									try{
+										$decretoDOM = new \DOMDocument();
+										libxml_use_internal_errors(true);
+
+										$decretoDOM->loadHtml($decretoFull);
+										libxml_clear_errors();
+
+										$h1 = $decretoDOM->getElementsByTagName('h1');
+										if ($h1->length >0 ){
+											$this->titulo = trim(preg_replace('/\s+/',' ',html_entity_decode($h1->item(0)->nodeValue)));
+										}else{
+											$font = $decretoDOM->getElementsByTagName('font');
+											if ($font->length >0 ){
+												$this->titulo = trim(preg_replace('/\s+/',' ',html_entity_decode($font->item(0)->nodeValue)));
+											}
+										}
+									} catch(ErrorException $exception ){
+
+									}
+								}
+
+								$tries--;
 							}
 							array_push($result, array('cod_diario' => $diario->cod_diario, 'cod_nota'=>$contentDecreto->cod_nota, 'titulo'=> $contentDecreto->tituloDecreto,'contenido' =>$decretoFull, 'pagina'=>$contentDecreto->pagina, 'secretaria'=>$contentSecretaria->nombreSecretaria, 'organismo' =>$organismo->nomOrganismo, 'seccion'=>$seccion->numSeccion));
 						}

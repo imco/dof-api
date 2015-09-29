@@ -112,7 +112,7 @@ class DOFClientController extends Controller {
 		//curl_setopt($ch, CURLOPT_REFERER, "http://www.example.org/yay.htm");
 
 		// User agent
-		curl_setopt($ch, CURLOPT_USERAGENT, "scrapper");
+		curl_setopt($ch, CURLOPT_USERAGENT, "DOF Scrapper v1.0.1");
 
 		// Include header in result? (0 = yes, 1 = no)
 		curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -121,13 +121,20 @@ class DOFClientController extends Controller {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 		// Timeout in seconds
-		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 120);
 
 		// Download the given URL, and return output
 		$output = curl_exec($ch);
 
+		$info = curl_getinfo($ch);
+		$header = curl_exec($ch);
+		
 		// Close the cURL resource, and free system resources
 		curl_close($ch);
+//		var_dump($header);
+
+//		var_dump ($info);
+//		var_dump($output);
 
 		return $output;
 	}

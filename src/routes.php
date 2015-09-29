@@ -1,6 +1,10 @@
 <?php
 use Swagger\Annotations as SWG;
 
+use IMCO\CatalogoNOMsApi\DofDiario;
+use IMCO\CatalogoNOMsApi\DOFClientController;
+//use Response;
+
 Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsApi'), function () {
 /**
  *		@SWG\Path(
@@ -83,6 +87,52 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 		Route::get('edicion/{year}/{month?}/{day?}', 'DOFClientController@getEditionsOnDate');
 		Route::get('sumario/{year}/{month}/{day}', 'DOFClientController@getDateSummary');	
 	});
+
+
+	Route::get('test', function(){
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, 'https://caminoalexito.firebaseio.com/entries.json');
+
+		// Include header in result? (0 = yes, 1 = no)
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+
+		// Should cURL return or print out the data? (true = return, false = print)
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		// Timeout in seconds
+		curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+
+		// Download the given URL, and return output
+		$entries = json_decode(curl_exec($ch));
+		curl_close($ch);
+
+
+		$header = array("cct" => "CCT","school" => "Nombre de escuela","representativeNames" => "Nombre de representante","email" => "Correo electrónico de contacto","phone" => "Teléfono de contacto","associationNames" => "Nombres de integrantes de Asociación de Padres","schoolFeatures" => "Características de la escuela","studentsNumber" => "Número de alumnos en martícula","environmentDescription" => "Descripción entorno familiar y social de población beneficiada","schoolProblems"=> "Principales problemas en entorno de la escuela","problematic" => "Problemática que busca resolver","justification" => "Justificación","activityDescription" => "Descripción de actividades que se planean realizar","namesList"=> "Quiénes estarían involucrados?","date" => "Fechas estimadas para realización del proyecto","decisionDescription"=> "Descripción de cómo se tomarán las decisiones","evaluation"=> "¿Cómo vamos a verificar si avanzamos como lo planeamos?","interaction"=> "¿Cómo interactuarán con los maestros y directivos de la escuela?");
+
+		$result ="";
+
+		foreach($header AS $key => $param){
+
+			$result = $result . '"'. str_replace('"', '""', $param) . '"' .(($key == count($header)-1) ? '' : ',');
+		}
+		$result = $result  ."\n";
+
+		foreach($entries AS $entry){
+			foreach($header AS $key=>$param){
+				if (property_exists($entry, $key)){
+					$result = $result . '"' .str_replace('"', '""', $entry->$key) . '"';
+				}
+				$result = $result . (($key == count($header)-1) ? '' : ',');
+			}
+			$result = $result  ."\n";
+		}
+
+		$result = mb_convert_encoding($result, 'iso-8859-1', 'utf-8');
+
+		return \Response::make($result,200, array('Content-type'=>'"text/csv"; charset="iso-8859-1"', 'Content-Disposition' => 'attachment; filename="ExportFileName.csv"'));
+	});
+
 
 
 
