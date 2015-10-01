@@ -61,13 +61,14 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 							$decretoFull = NULL;
 					    	$tries = 5;
 							while (strlen($decretoFull)<=1 && $tries>0){
-								$decretoFull = DOFClientController::http_get('http://diariooficial.gob.mx/nota_detalle_popup.php?codigo='. $this->cod_nota);
+								$decretoFull = DOFClientController::http_get('http://diariooficial.gob.mx/nota_detalle_popup.php?codigo='. $contentDecreto->cod_nota);
 
 								$matches = array();
 								preg_match('/<!DOCTYPE HTML .* <\/HTML>/', $decretoFull, $matches);
 								if (!$matches && strlen($decretoFull)>0){
 									$matches[0] = $decretoFull;
 								}
+								//var_dump($decretoFull);
 								if ($matches){
 									$decretoFull = $matches[0];
 									$decretoFull = $testHTML = preg_replace('/(&#\d{4});?/', '\1;', $decretoFull);
@@ -81,11 +82,21 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 
 										$h1 = $decretoDOM->getElementsByTagName('h1');
 										if ($h1->length >0 ){
-											$this->titulo = trim(preg_replace('/\s+/',' ',html_entity_decode($h1->item(0)->nodeValue)));
+											$contentDecreto->tituloDecreto = trim(preg_replace('/\s+/',' ',html_entity_decode($h1->item(0)->nodeValue)));
 										}else{
 											$font = $decretoDOM->getElementsByTagName('font');
 											if ($font->length >0 ){
-												$this->titulo = trim(preg_replace('/\s+/',' ',html_entity_decode($font->item(0)->nodeValue)));
+												for ($i=0; $i<$font->length;$i++){
+													$found = preg_replace('/\s+/', ' ', trim(strtolower(preg_replace('/[^\w\s]/', '', html_entity_decode($font->item($i)->nodeValue)))));
+													$current = preg_replace('/\s+/', ' ', trim(strtolower(preg_replace('/[^\w\s]/', '',$contentDecreto->tituloDecreto))));
+
+													//print_r("$found\n$current\n". strcmp($found,$current) . "\n");
+													if (strcmp($found,$current)==0){
+														$contentDecreto->tituloDecreto = trim(preg_replace('/\s+/',' ',html_entity_decode($font->item($i)->nodeValue)));
+														break;
+													}
+												}
+//												$contentDecreto->tituloDecreto = trim(preg_replace('/\s+/',' ',html_entity_decode($font->item(0)->nodeValue)));
 											}
 										}
 									} catch(ErrorException $exception ){

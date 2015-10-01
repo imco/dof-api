@@ -16,6 +16,7 @@ class DofNota extends Model
     	while (strlen($decretoFull)<=1 && $tries>0){
 			$decretoFull = DOFClientController::http_get('http://diariooficial.gob.mx/nota_detalle_popup.php?codigo='. $this->cod_nota);
 
+			//print_r('http://diariooficial.gob.mx/nota_detalle_popup.php?codigo='. $this->cod_nota . "\n");
 			$matches = array();
 			preg_match('/<!DOCTYPE HTML .* <\/HTML>/', $decretoFull, $matches);
 
@@ -39,7 +40,16 @@ class DofNota extends Model
 					}else{
 						$font = $decretoDOM->getElementsByTagName('font');
 						if ($font->length >0 ){
-							$this->titulo = trim(preg_replace('/\s+/',' ',html_entity_decode($font->item(0)->nodeValue)));
+							for ($i=0; $i<$font->length;$i++){
+								$found = preg_replace('/\s+/', ' ', trim(strtolower(preg_replace('/[^\w\s]/', '', html_entity_decode($font->item($i)->nodeValue)))));
+								$current = preg_replace('/\s+/', ' ', trim(strtolower(preg_replace('/[^\w\s]/', '',$this->titulo))));
+
+								//print_r("$found\n$current\n". strcmp($found,$current) . "\n");
+								if (strcmp($found,$current)==0){
+									$this->titulo = trim(preg_replace('/\s+/',' ',html_entity_decode($font->item($i)->nodeValue)));
+									break;
+								}
+							}
 						}
 					}
 				} catch(ErrorException $exception ){
