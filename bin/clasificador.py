@@ -36,7 +36,7 @@ def getFeatures(clavenom,titulo):
   return featureset if len(context)>0 else ''
 
 def getTrainingSet(file):
-  f = open(file, 'rt')
+  f = open(file, 'rt', encoding='utf-8')
   trainingSet = []
   titulo = None
   claveNom = None
