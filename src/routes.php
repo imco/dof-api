@@ -108,11 +108,11 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 			if (strlen($subject)>0){
 				foreach(preg_split("/((\r?\n)|(\r\n?))/", $subject) as $line){
 					if (strlen($line)>0){
-						$result .= "$nota->titulo\t$line\n";
+						$result .= "$nota->cod_nota\t$nota->titulo\t$line\n";
 					}
 				}
 			}else{
-				$result .= "$nota->titulo\n";	
+				$result .= "$nota->cod_nota\t$nota->titulo\n";	
 			}
 		}
 		
