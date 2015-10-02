@@ -91,13 +91,31 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 
 	Route::get('test', function(){
+		$path = base_path('bin');
+		$data = base_path('database/data');
+		
+		$notas = DofNota::where('titulo', '~', 'NMX')->limit(100)->get();
+
+		$result = "";
+		foreach($notas AS $nota){
+			//$nota = DofNota::find($cod_nota);
+			$subject = `$path/clasificador.py -i $data/knowledgebase.csv "$nota->titulo"`;
+			foreach(preg_split("/((\r?\n)|(\r\n?))/", $subject) as $line){
+				if (strlen($line)>0){
+					$result .= "$nota->titulo\t$line\n";
+				}
+			}
+		}
+		
+		return \Response::make($result,200, ['Content-Type'=>'text/plain']);
+		
 		//DOFClientController::fillNotes();
 
 
 /*		DOFNota::find(763543)->updateTitulo();
 		return DofNota::find(763543)->titulo;
 //*/
-
+/*
 		print_r("STARTING...\n");
 		$notes = DofNota::whereRaw('titulo ~ \'\?\?\' and contenido is not null')->limit(1)->get();
 		foreach($notes AS $nota){
@@ -105,7 +123,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 			$nota->updateTitulo();
 			print_r("$nota->titulo\n");
 		}
-
+/
 		//return Response::make()->header("Content-Type", "plain/text");
 //*/
 	});

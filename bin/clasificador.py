@@ -5,6 +5,11 @@ import html.parser
 import json, csv
 import sys,getopt
 
+patterns = [('NOMS', '((?:norma\s+oficial\s+mexicana\s*(?:espec.{1,2}fica\s*)?(?:de\s+emergencia,?\s*(?:denominada\s*)?)?(?:\(?\s*emergente\s*\)?\s*)?(?:\(?\s*con\s+\car.{1,2}cter\s+(?:de\s+emergencia|emergente)\s*\)?\s*,?\s*)?(?:\s*n.{1,2}mero\s*)?(?:\s*\-\s*)?\s)|(?P<prefijo>(?<=[^\w])(\w+\s*[\-\/]\s*)*?NOM(?:[-.\/]|\s+[^a-z])+))(?P<clave>(?:(?:NOM-?)?[^;"]+?)(?:\s*(?:(?=[,.]\s|[;"]|[^\d\-\/]\s[^\d])|\d{4}|\d(?=\s+[^\d]+[\s,;:]))))'),
+
+('NMX', '((?:norma\s+mexicana\s*(?:espec.{1,2}fica\s*)?(?:de\s+emergencia,?\s*(?:denominada\s*)?)?(?:\(?\s*emergente\s*\)?\s*)?(?:\(?\s*con\s+\car.{1,2}cter\s+(?:de\s+emergencia|emergente)\s*\)?\s*,?\s*)?(?:\s*n.{1,2}mero\s*)?(?:\s*\-\s*)?\s)|(?P<prefijo>(?<=[^\w])(\w+\s*[\-\/]\s*)*?NMX(?:[-.\/]|\s+[^a-z])+))(?P<clave>(?:(?:NOM-?)?[^;"]+?)(?:\s*(?:(?=[,.]\s|[;"]|[^\d\-\/]\s[^\d])|\d{4}|\d(?=\s+[^\d]+[\s,;:]))))')]
+
+
 def getContext(word, sentence):
   import re
   regexpr = '.*?\(?((?:\([^\)]+|[^\(]+|(\.\s+|^).*\(.*\)[^\)]+))' + word
@@ -27,7 +32,7 @@ def getFeatures(clavenom,titulo):
   featureset['context'] = context;
   featureset['firstword'] = wordsArray[0]
   featureset['lastword'] = wordsArray[-1]
-  featureset['countwords'] = len(wordsArray)
+  #featureset['countwords'] = len(wordsArray)
   return featureset if len(context)>0 else ''
 
 def getTrainingSet(file):
@@ -61,9 +66,20 @@ def getTrainingSet(file):
     f.close()
   return trainingSet
 
+def findClaves(contentLine, pattern):
+  result = []
+
+  matches = re.findall(pattern, contentLine, re.IGNORECASE)
+
+  for match in matches:
+    claveCorregida = match[1] + match[-1]
+    claveCorregida = claveCorregida.replace("nicos- NOM","NOM").replace("electrónicos- NOM","NOM").replace("\\fNOM","NOM").replace('.)','')
+    claveCorregida = re.sub('^[^\d]+$','',claveCorregida)
+    result.append(claveCorregida)
+
+  return result
+
 def main(argv):
-  inputfile = 'src/database/data/knowledgebase.csv'
-  testString = 'ACUERDO por el cuál se modifica la NOM-SEMARNAT-001'
   try:
     opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
   except getopt.GetoptError:
@@ -79,19 +95,21 @@ def main(argv):
       sys.exit()
 
   if(len(args)>0):
-    testString = testString
+    testString = args[0]
 
 
-  print ('Input file is: '+ inputfile)
-  print ('Test string is: ' + testString)
-
-  
-  #print (features)
 
   trainingSet = getTrainingSet(inputfile);
   classifier = nltk.NaiveBayesClassifier.train(trainingSet)
-  features = getFeatures('NOM-SEMARNAT-001', testString)  
-  print (classifier.classify(features))
+    
+  for type, pattern in patterns:
+    claves = findClaves(testString, pattern)
+
+    for clave in claves:
+      features = getFeatures(clave, testString)
+      print (type + "\t" + clave + "\t" + classifier.classify(features))
  
+
+  
 if __name__ == "__main__":
    main(sys.argv[1:])
