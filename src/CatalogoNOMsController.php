@@ -9,6 +9,8 @@ use Input;
 
 use Illuminate\Http\Request;
 
+use stdClass;
+
 class CatalogoNOMsController extends Controller {
 	protected $connection = 'CatalogoNomsOld';
 	
