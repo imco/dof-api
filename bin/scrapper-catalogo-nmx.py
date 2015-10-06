@@ -2,6 +2,7 @@
 
 import requests
 from html.parser import HTMLParser
+import re
 
 url_0 = "http://www.economia-nmx.gob.mx/normasmx/index.nmx"
 url_1 = "http://www.economia-nmx.gob.mx/normasmx/consulta.nmx"
@@ -47,6 +48,10 @@ class DetalleNormaParser(HTMLParser):
 					print(self.link, end="")
 				else:
 					print(data, end="")
+
+					matches=re.search('NMX-([^-]+)-', data, re.IGNORECASE)
+					if (matches):
+						print("\t" + matches.group(1), end="")
 			
 	def handle_charref(self, ref):
 		self.handle_entityref("#" + ref)
@@ -104,6 +109,7 @@ for clavenmx in parserNmx.claves:
 	r=s.post(url_2, {"bandera":1, "clave":clavenmx})
 
 	parserConsulta = consultaVariasParser()
+	parserConsulta.links = []
 	parserConsulta.feed(r.text)
 
 	# Iterar sobre los links identificados
