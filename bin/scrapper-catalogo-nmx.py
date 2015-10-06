@@ -3,6 +3,7 @@
 import requests
 from html.parser import HTMLParser
 import re
+import urllib
 
 url_0 = "http://www.economia-nmx.gob.mx/normasmx/index.nmx"
 url_1 = "http://www.economia-nmx.gob.mx/normasmx/consulta.nmx"
@@ -14,6 +15,7 @@ class DetalleNormaParser(HTMLParser):
 	inTableData = False
 	field = 0
 	foundData=False
+	column = 0
 	link = ''
 	def handle_starttag(self, tag, attrs):
 		self.link = ''
@@ -43,15 +45,15 @@ class DetalleNormaParser(HTMLParser):
 				#print("\n", end="")
 
 			if(self.field==2):
-				self.foundData=True
 				if (len(self.link)>0):
 					print(self.link, end="")
 				else:
 					print(data, end="")
-
-					matches=re.search('NMX-([^-]+)-', data, re.IGNORECASE)
-					if (matches):
-						print("\t" + matches.group(1), end="")
+					if (not self.foundData):
+						matches=re.search('NMX-([^-]+)-', data, re.IGNORECASE)
+						if (matches):
+							print("\t" + matches.group(1), end="")
+					self.foundData=True
 			
 	def handle_charref(self, ref):
 		self.handle_entityref("#" + ref)
@@ -84,7 +86,6 @@ class consultaVariasParser(HTMLParser):
 		if tag=='a':
 			for attr, value in attrs:
 				if (attr=='href' and 'detallenorma.nmx?clave=' in value):
-					self.link= value
 					self.links.append('http://www.economia-nmx.gob.mx' + value)
 	def handle_endtag(self, tag):
 		if tag=='td':
@@ -104,14 +105,15 @@ r = s.post(url_1, data)
 
 # Iterar sobre las claves de NMX
 parserNmx = seleccionaNmxParser()
-parserNmx.feed(r.text)
+parserNmx.feed(r.text.encode().decode('windows-1252'))
 for clavenmx in parserNmx.claves:
-	r=s.post(url_2, {"bandera":1, "clave":clavenmx})
+	if 'NMX-J-673/11' in clavenmx:
+		clavenmx=clavenmx.replace('Â','')
+	r=s.post(url_2, {"bandera":1, "clave":clavenmx.encode('windows-1252')})
 
 	parserConsulta = consultaVariasParser()
 	parserConsulta.links = []
 	parserConsulta.feed(r.text)
-
 	# Iterar sobre los links identificados
 	for url_3 in parserConsulta.links:
 		r = s.post(url_3)
