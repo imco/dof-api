@@ -18,16 +18,12 @@ class DofDiario extends Model
 		
 		$response = json_decode(DOFClientController::http_get('http://diariooficial.gob.mx/WS_getDiarioPDF.php?day='.$date->format('d').'&month='.$date->format('m').'&year='.$date->format("Y").'&edicion=' . $this->edicion));
 
-		if (count ($response->availablePDF) == 1){
+		if ($response && count ($response->availablePDF) == 1){
 			$this->availablePdf = $response->availablePDF[0];
 
 			if (DOFClientController::getHttpCode($this->availablePdf) == 200){
 				return $response->availablePDF[0];
-				//$this->save();
-				//return true;
 			}
-
-			//$result = array("cod_diario" => $this->cod_diario, "availablePdf" =>);
 		}else{
 			error_log("No PDF for: " . $this->cod_diario);
 		}
