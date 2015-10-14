@@ -8,7 +8,6 @@ use IMCO\CatalogoNOMsApi\DOFClientController;
 
 
 Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsApi'), function () {
-$connection = 'CatalogoNomsOld';
 
 /**
  *		@SWG\Path(
@@ -154,7 +153,7 @@ $connection = 'CatalogoNomsOld';
 
 
 	Route::get('producto/{producto?}', function ($producto = null) {
-
+		$connection = 'CatalogoNomsOld';
 		if ($producto == null) {
 			$sqlQuery = 'WITH productos AS (select DISTINCT unnest(producto::text[]) as "producto" from vigencianoms ORDER BY producto)
 			SELECT array_to_json(array_agg(producto)) as producto from productos';
@@ -182,6 +181,7 @@ $connection = 'CatalogoNomsOld';
 	});
 
 	Route::get('rama/{rama?}', function ($rama = null) {
+		$connection = 'CatalogoNomsOld';
 		if ($rama == null) {
 			$sqlQuery = "WITH ramas AS (select DISTINCT unnest(rama::text[]) as rama from vigencianoms ORDER BY rama)
 			SELECT array_to_json(array_agg(rama)) as rama from ramas";
@@ -208,6 +208,8 @@ $connection = 'CatalogoNomsOld';
 	});
 
 	Route::get('proyecto', function () {
+		$connection = 'CatalogoNomsOld';
+		
 		$sqlQuery = "WITH nomReciente AS (SELECT clavenomnorm, min(fecha) AS fecha FROM notasnom GROUP BY clavenomnorm),
 		notasNOMRecientes AS (SELECT * from nomreciente NATURAL JOIN notasnom)
 		SELECT fecha,clavenomnorm,trim(both '-' from (regexp_matches(vigencianoms.clavenomnorm,'NOM(?:[^a-z0-9])(\d[a-z0-9\/]*[^a-z0-9])?([a-z][a-z0-9\/]*(?:[^a-z0-9](?:[a-z][a-z0-9\/]*[^a-z0-9]?)?)?)?(\d[a-z0-9\/]*[^a-z0-9])?','gi'))[2]) as comite, titulo from vigencianoms NATURAL LEFT JOIN notasnomrecientes WHERE estatus='Proyecto';";
