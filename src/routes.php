@@ -6,9 +6,10 @@ use IMCO\CatalogoNOMsApi\DofNota;
 use IMCO\CatalogoNOMsApi\DOFClientController;
 //use Response;
 
-$connection = 'CatalogoNomsOld';
 
 Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsApi'), function () {
+$connection = 'CatalogoNomsOld';
+
 /**
  *		@SWG\Path(
  *			path = "/catalogonoms/dof/edicion/{año}/{mes}/{dia}",
