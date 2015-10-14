@@ -15,7 +15,7 @@ class CatalogoNOMsController extends Controller {
 	protected $connection = 'CatalogoNomsOld';
 	
 	public function getNomsPublications(){
-		return json_encode(DB::connection($this->connection)->select(DB::raw("WITH fechaPublicacion AS (SELECT trim(both '-' FROM substring(clavenomnorm from '-.*-')) subclavenomnorm, max(fecha) AS fecha_nom, NULL::date AS fecha_modificacion FROM notasnom  WHERE etiqueta= 'NOM' GROUP BY trim(both '-' FROM substring(clavenomnorm from '-.*-'))),
+		return json_encode(DB::connection($this->connection)->select(DB::connection($connection)->raw("WITH fechaPublicacion AS (SELECT trim(both '-' FROM substring(clavenomnorm from '-.*-')) subclavenomnorm, max(fecha) AS fecha_nom, NULL::date AS fecha_modificacion FROM notasnom  WHERE etiqueta= 'NOM' GROUP BY trim(both '-' FROM substring(clavenomnorm from '-.*-'))),
 		
 			fechaModificacion AS (SELECT trim(both '-' FROM substring(clavenomnorm from '-.*-')) subclavenomnorm, NULL::date as fecha_nom, max(fecha) AS fecha_modificacion FROM notasnom  WHERE etiqueta= 'Modificación' GROUP BY trim(both '-' FROM substring(clavenomnorm from '-.*-'))),
 			
@@ -51,7 +51,7 @@ class CatalogoNOMsController extends Controller {
 				, '},')||'}]' as normas FROM nomsDeLaDependencia Natural JOIN nomsDetalle GROUP BY dependencia, nombre_dependencia, comite, descripcion_comite, reseña_comite";
 
 		}
-		$result = DB::connection($this->connection)->select(DB::raw($sqlQuery));
+		$result = DB::connection($this->connection)->select(DB::connection($connection)->raw($sqlQuery));
 		foreach ($result as $row) {
 			if (property_exists($row, 'normas')) {
 				$row->normas = json_decode($row->normas);
@@ -63,7 +63,7 @@ class CatalogoNOMsController extends Controller {
 	function getNOMPublications($clave) {
 		$clave = urldecode($clave);
 
-		$historial = DB::connection($this->connection)->select(DB::raw("
+		$historial = DB::connection($this->connection)->select(DB::connection($connection)->raw("
 			WITH fechaPublicacion AS (SELECT trim(both '-' FROM substring(clavenomnorm from '-.*-')) subclavenomnorm, max(fecha) AS fecha_nom, NULL::date AS fecha_modificacion FROM notasnom  WHERE etiqueta= 'NOM' GROUP BY trim(both '-' FROM substring(clavenomnorm from '-.*-'))),
 		
 			fechaModificacion AS (SELECT trim(both '-' FROM substring(clavenomnorm from '-.*-')) subclavenomnorm, NULL::date as fecha_nom, max(fecha) AS fecha_modificacion FROM notasnom  WHERE etiqueta= 'Modificación' GROUP BY trim(both '-' FROM substring(clavenomnorm from '-.*-'))),
@@ -82,11 +82,11 @@ class CatalogoNOMsController extends Controller {
 	function getNOM($clave) {
 		$clave = urldecode($clave);
 
-		$historial = DB::connection($this->connection)->select(DB::raw("SELECT  fecha,cod_nota, clavenomnorm, etiqueta, entity2char(titulo), urlnota AS url
+		$historial = DB::connection($this->connection)->select(DB::connection($connection)->raw("SELECT  fecha,cod_nota, clavenomnorm, etiqueta, entity2char(titulo), urlnota AS url
 			FROM (SELECT * FROM notasnom UNION SELECT fecha, null as cod_nota, null as clavenom, clavenomnorm, 'Manifestación de Impacto Regulatorio' as titulo, etiqueta, urlmir, null as revisionhumana FROM mir) notasnom where clavenomnorm like :clavenomnorm ORDER BY fecha ASC;"),
 			array('clavenomnorm' => '%' . substr($clave, 3, -4) . '%'));
 
-		$ramayProducto = DB::connection($this->connection)->select(DB::raw("
+		$ramayProducto = DB::connection($this->connection)->select(DB::connection($connection)->raw("
 			Select array_to_json(rama::text[]) as rama, array_to_json(producto::text[]) as producto from vigencianoms where clavenomnorm like :clavenomnorm limit 1;
 			"), array('clavenomnorm' => '%' . substr($clave, 3, -4) . '%'));
 
@@ -98,7 +98,7 @@ class CatalogoNOMsController extends Controller {
 
 		$result->historial = $historial;
 
-		$comite = DB::connection($this->connection)->select(DB::raw("SELECT  secretaria, nombre_secretaria, comite, descripcion_comite from comite WHERE :clavenomnorm like ('%'||comite||'%')ORDER BY secretaria, comite ASC;"),
+		$comite = DB::connection($this->connection)->select(DB::connection($connection)->raw("SELECT  secretaria, nombre_secretaria, comite, descripcion_comite from comite WHERE :clavenomnorm like ('%'||comite||'%')ORDER BY secretaria, comite ASC;"),
 			array('clavenomnorm' => '%' . substr($clave, 3, -4) . '%'));
 
 		$result->comite = $comite;

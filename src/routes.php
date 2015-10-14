@@ -166,7 +166,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 			select clavenomnorm, fecha, titulo, estatus, array_to_json(producto::text[]) producto, array_to_json(rama::text[]) rama, comite from vigencianoms NATURAL JOIN detalleNOM WHERE (lower(producto))::text[] @> ARRAY[lower('$producto')] ORDER BY clavenomnorm";
 		}
 
-		$result = DB::connection($connection)->select(DB::raw($sqlQuery));
+		$result = DB::connection($connection)->select(DB::connection($connection)->raw($sqlQuery));
 		foreach ($result as $row) {
 			if (property_exists($row, 'producto')) {
 				$row->producto = json_decode($row->producto);
@@ -193,7 +193,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 			select clavenomnorm,titulo,  fecha, estatus, array_to_json(producto::text[]) producto, array_to_json(rama::text[]) rama, comite from vigencianoms NATURAL JOIN detalleNOM WHERE (lower(rama)::text[]) @> ARRAY[lower('$rama')] ORDER BY clavenomnorm";
 		}
 
-		$result = DB::connection($connection)->select(DB::raw($sqlQuery));
+		$result = DB::connection($connection)->select(DB::connection($connection)->raw($sqlQuery));
 		foreach ($result as $row) {
 			if (property_exists($row, 'producto')) {
 				$row->producto = json_decode($row->producto);
@@ -209,12 +209,12 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 	Route::get('proyecto', function () {
 		$connection = 'CatalogoNomsOld';
-		
+
 		$sqlQuery = "WITH nomReciente AS (SELECT clavenomnorm, min(fecha) AS fecha FROM notasnom GROUP BY clavenomnorm),
 		notasNOMRecientes AS (SELECT * from nomreciente NATURAL JOIN notasnom)
 		SELECT fecha,clavenomnorm,trim(both '-' from (regexp_matches(vigencianoms.clavenomnorm,'NOM(?:[^a-z0-9])(\d[a-z0-9\/]*[^a-z0-9])?([a-z][a-z0-9\/]*(?:[^a-z0-9](?:[a-z][a-z0-9\/]*[^a-z0-9]?)?)?)?(\d[a-z0-9\/]*[^a-z0-9])?','gi'))[2]) as comite, titulo from vigencianoms NATURAL LEFT JOIN notasnomrecientes WHERE estatus='Proyecto';";
 
-		$result = DB::connection($connection)->select(DB::raw($sqlQuery));
+		$result = DB::connection($connection)->select(DB::connection($connection)->raw($sqlQuery));
 
 		return json_encode($result);
 
