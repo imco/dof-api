@@ -110,15 +110,15 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 			if (strlen($subject)>0){
 				foreach(preg_split("/((\r?\n)|(\r\n?))/", $subject) as $line){
 					if (strlen($line)>0){
-						$result .= "$nota->cod_nota\t$nota->titulo\t$line\n";
+						$result .= "\"$nota->cod_nota\",\"$nota->titulo\",\"$line\"\n";
 					}
 				}
 			}else{
-				$result .= "$nota->cod_nota\t$nota->titulo\n";	
+				$result .= "\"$nota->cod_nota\"$nota->titulo\"\n";	
 			}
 		}
 		
-		return \Response::make($result,200, ['Content-Type'=>'text/plain']);
+		return \Response::make($result,200, ['Content-Type'=>'text/plain', "Content-Disposition=>attachment; filename=nmx.csv"]);
 		
 		//DOFClientController::fillNotes();
 
