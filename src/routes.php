@@ -102,7 +102,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 		
 		$notas = DofNota::where('titulo', '~', 'NMX')->limit(100)->get();
 
-		$result = "cod_nota\ttitulo\ttipo\tclave\tclasificación\n";
+		$result = "cod_nota\ttitulo\ttipo\tclave\tclasificación";
 		foreach($notas AS $nota){
 			//$nota = DofNota::find($cod_nota);
 			$subject = `$path/clasificador.py -i $data/knowledgebase.csv "$nota->titulo"`;
@@ -110,15 +110,15 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 			if (strlen($subject)>0){
 				foreach(preg_split("/((\r?\n)|(\r\n?))/", $subject) as $line){
 					if (strlen($line)>0){
-						$result .= "\"$nota->cod_nota\",\"$nota->titulo\",\"$line\"\n";
+						$result .= "$nota->cod_nota\t$nota->titulo\t$line\n";
 					}
 				}
 			}else{
-				$result .= "\"$nota->cod_nota\"$nota->titulo\"\n";	
+				$result .= "$nota->cod_nota\t$nota->titulo\n";	
 			}
 		}
 		
-		return \Response::make($result,200, ['Content-Type'=>'text/plain', "Content-Disposition=>attachment; filename=nmx.csv"]);
+		return \Response::make($result,200, ['Content-Type'=>'text/plain', "Content-Disposition"=>"attachment; filename=nmx.csv"]);
 		
 		//DOFClientController::fillNotes();
 
