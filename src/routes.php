@@ -102,7 +102,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 		
 		$notas = DofNota::where('titulo', '~', 'NMX')->limit(100)->get();
 
-		$result = "cod_nota\ttitulo\ttipo\tclave\tclasificación";
+		$result = "cod_nota\ttitulo\ttipo\tclave\tclasificación\n";
 		foreach($notas AS $nota){
 			//$nota = DofNota::find($cod_nota);
 			$subject = `$path/clasificador.py -i $data/knowledgebase.csv "$nota->titulo"`;
