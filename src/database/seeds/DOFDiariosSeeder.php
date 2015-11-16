@@ -17,9 +17,10 @@ class DOFDiariosSeeder extends Seeder
     public function run()
     {
         $dofClient = new DOFClientController;
-        for ($year=1917 ; $year <= date("Y"); $year++){
+        for ($year = date("Y"); $year=>1917 ; $year--){
+            print_r('Descargando códigos de diarios...');
+            var_dump($dofClient->getEditionsOnDate($year));
             $dofDiario = $dofClient->getEditionsOnDate($year)->getData();
-
             foreach($dofDiario->list as $diario){
                 $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
 

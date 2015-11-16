@@ -114,6 +114,12 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 	});
 
 
+	Route::group(array('prefix' => 'error'), function () {
+		Route::get('/fecha-publicacion', function(){
+		    return view('catalogonoms::error-fecha-publicacion');
+		});
+	});
+
 	Route::get('test', function(){
 		$locale='es_MX.UTF-8';
 		setlocale(LC_ALL,$locale);
