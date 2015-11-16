@@ -10,7 +10,7 @@ class CreateDofNotasTable extends Migration
      *
      * @return void
      */
-    protected $connection = 'CatalogoNoms';
+    protected $connection = 'catalogoNoms';
 
     public function up()
     {
@@ -23,10 +23,13 @@ class CreateDofNotasTable extends Migration
             $table->string('secretaria');
             $table->integer('pagina');
             $table->text('contenido')->nullable();
+
             $table->timestamps();
             $table->primary('cod_nota');
             $table->foreign('cod_diario')->references('cod_diario')->on('dof_diarios');
         });
+
+        DB::connection($this->connection)->statement("create view catalogonoms_view_nmx as select diario.cod_diario, fecha, cod_nota, titulo from catalogonoms_dof_notas nota JOIN catalogonoms_dof_diarios diario ON diario.cod_diario = nota.cod_diario where titulo ~ 'NMX|normas?\s*mexicanas?';");
     }
 
     /**
@@ -35,7 +38,7 @@ class CreateDofNotasTable extends Migration
      * @return void
      */
     public function down()
-    {
+    {   DB::connection($this->connection)->statement('DROP VIEW catalogonoms_view_nmx');
         Schema::connection($this->connection)->drop('dof_notas');
     }
 }

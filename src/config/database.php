@@ -2,7 +2,7 @@
 
 return [
 	'connections' => [
-		'CatalogoNoms' => [
+		'catalogoNoms' => [
 			'driver'   => env('CNDB_DRIVER', env('DB_DRIVER','pgsql')),
 			'host'     => env('CNDB_HOST', env('DB_HOST', 'localhost')),
 			'database' => env('CNDB_DATABASE', env('DB_DATABASE','homestead')),

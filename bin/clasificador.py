@@ -1,23 +1,33 @@
 #!/usr/bin/env python3
-
+import fileinput
 import nltk
 import re
 import html.parser
-import json, csv
+#import json
 import sys,getopt
+import csv
+import re
+import string
+# Patrones de Expresiones Regulares que validan un token cómo perteneciente a una categoria
+# Definición de las palabras que se quieren clasificar según su contexto
+# 
+patterns = [
+  ('NOMS', '((?:norma\s+oficial\s+mexicana\s*(?:espec.{1,2}fica\s*)?(?:de\s+emergencia,?\s*(?:denominada\s*)?)?(?:\(?\s*emergente\s*\)?\s*)?(?:\(?\s*con\s+\car.{1,2}cter\s+(?:de\s+emergencia|emergente)\s*\)?\s*,?\s*)?(?:\s*n.{1,2}mero\s*)?(?:\s*\-\s*)?\s)|(?P<prefijo>(?<=[^\w])(\w+\s*[\-\/]\s*)*?NOM(?:[-.\/]|\s+[^a-z])+))(?P<clave>(?:(?:NOM-?)?[^;"]+?)(?:\s*(?:(?=[,.]\s|[;"]|[^\d\-\/]\s[^\d])|\d{4}|\d(?=\s+[^\d]+[\s,;:]))))'),
+  ('NMX', '((?:norma\s+mexicana\s*(?:espec.{1,2}fica\s*)?(?:de\s+emergencia,?\s*(?:denominada\s*)?)?(?:\(?\s*emergente\s*\)?\s*)?(?:\(?\s*con\s+\car.{1,2}cter\s+(?:de\s+emergencia|emergente)\s*\)?\s*,?\s*)?(?:\s*n.{1,2}mero\s*)?(?:\s*\-\s*)?\s)|(?P<prefijo>(?<=[^\w])(\w+\s*[\-\/]\s*)*?NMX(?:[-.\/]|\s+[^a-z])+))(?P<clave>(?:(?:NOM-?)?[^;"]+?)(?:\s*(?:(?=[,.]\s|[;"]|[^\d\-\/]\s[^\d])|\d{4}|\d(?=\s+[^\d]+[\s,;:]))))')
+]
 
-patterns = [('NOMS', '((?:norma\s+oficial\s+mexicana\s*(?:espec.{1,2}fica\s*)?(?:de\s+emergencia,?\s*(?:denominada\s*)?)?(?:\(?\s*emergente\s*\)?\s*)?(?:\(?\s*con\s+\car.{1,2}cter\s+(?:de\s+emergencia|emergente)\s*\)?\s*,?\s*)?(?:\s*n.{1,2}mero\s*)?(?:\s*\-\s*)?\s)|(?P<prefijo>(?<=[^\w])(\w+\s*[\-\/]\s*)*?NOM(?:[-.\/]|\s+[^a-z])+))(?P<clave>(?:(?:NOM-?)?[^;"]+?)(?:\s*(?:(?=[,.]\s|[;"]|[^\d\-\/]\s[^\d])|\d{4}|\d(?=\s+[^\d]+[\s,;:]))))'),
 
-('NMX', '((?:norma\s+mexicana\s*(?:espec.{1,2}fica\s*)?(?:de\s+emergencia,?\s*(?:denominada\s*)?)?(?:\(?\s*emergente\s*\)?\s*)?(?:\(?\s*con\s+\car.{1,2}cter\s+(?:de\s+emergencia|emergente)\s*\)?\s*,?\s*)?(?:\s*n.{1,2}mero\s*)?(?:\s*\-\s*)?\s)|(?P<prefijo>(?<=[^\w])(\w+\s*[\-\/]\s*)*?NMX(?:[-.\/]|\s+[^a-z])+))(?P<clave>(?:(?:NOM-?)?[^;"]+?)(?:\s*(?:(?=[,.]\s|[;"]|[^\d\-\/]\s[^\d])|\d{4}|\d(?=\s+[^\d]+[\s,;:]))))')]
-
-
+# Oración en la que está localizada una palabra
 def getContext(word, sentence):
   import re
   regexpr = '.*?\(?((?:\([^\)]+|[^\(]+|(\.\s+|^).*\(.*\)[^\)]+))' + word
   result = re.search(regexpr, sentence, re.IGNORECASE)
   return re.sub(word + '.*$','', result.group(0), re.IGNORECASE).strip().lower() if result != None else None;
 
-def getFeatures(clavenom,titulo):
+
+# Obtiene las carácteristicas que determinan a que categoria pertenece una palabra según su contexto
+def getFeatures(clavenom,oracion):
+  titulo=oracion
   featureset = {}
   titulo = titulo.replace("'","\\'")
   context = getContext(clavenom, titulo)
@@ -67,6 +77,8 @@ def getTrainingSet(file):
     f.close()
   return trainingSet
 
+
+
 def findClaves(contentLine, pattern):
   result = []
 
@@ -80,37 +92,201 @@ def findClaves(contentLine, pattern):
 
   return result
 
-def main(argv):
+def usageMenu():
+  print ('USO: ' + sys.argv[0] + ' [ENUNCIADO]')
+  print ('Identifica la mensión de una NMX en un enunciado y clasifica su contexto');
+  print ('')
+  print ('\t-t, --training-data=TRAININGDATA\tArchivo que se usará de entrenamiento para el clasificador')
+  print ('\t-f, --read-from-file=INPUTFILE\tLeer las oraciones de un archivo de entrada.')
+
+  #print ('clasificador.py -f <inputFile> -t <inputTraining>')
+
+def inputErrorException():
+  print (sys.argv[0] + ': invalid option')
+  print ('Try `'+ sys.argv[0] + ' --help` for more information.' )
+  sys.exit(2)
+
+def readInput():
+  inputTraining = None
+  sentence = None
+  inputFile = None
+  match = None
+
   try:
-    opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
+    opts, args = getopt.getopt(sys.argv[1:],"ht:f:m:",["help", "training-file=", "input-file=", "match="])
+    for opt, value in opts:
+      if opt in ("-t", "--training-file"):
+        inputTraining = value
+      elif opt in ('-f', '--input-file'):
+        inputFile = value
+      elif opt in ('-m' , '--match'):
+        match = value
+      elif opt in ('-h', '--help'):
+        usageMenu()
+        sys.exit()        
+    if(len(args)>0):
+        sentence = args
   except getopt.GetoptError:
-    print ('clasificador.py -i <inputfile> -o <outputfile>')
-    sys.exit(2)
-  for opt, arg in opts:
-    if opt in ("-i", "--ifile"):
-      inputfile = arg
-    elif opt in ("-o", "--ofile"):
-      outputfile = arg
-    elif opt == '-h':
-      print ('clasificador.py -i <inputfile> -o <outputfile>')
-      sys.exit()
-
-  if(len(args)>0):
-    testString = args[0]
+    inputErrorException()
+  
+  while(len(sys.argv)>1):
+    del sys.argv[1]
 
 
+  return sentence, inputFile, inputTraining, match
 
-  trainingSet = getTrainingSet(inputfile);
-  classifier = nltk.NaiveBayesClassifier.train(trainingSet)
-    
-  for type, pattern in patterns:
-    claves = findClaves(testString, pattern)
+def getContextV2(contextualizable, sentence):
+  word, start, end = None, None, None
+  """El contenedor de una frase se define comoo una tupla de expresiones regulares que identifican un inicio y un final"""
+  phraseWrappers = [('\(', '\)'), ('\.\s', '(\.|$)'), ('^', '(\.|$)')]
 
-    for clave in claves:
-      features = getFeatures(clave, testString)
-      print (type + "\t" + clave + "\t" + classifier.classify(features))
- 
+  # Cuando la clase es un string 
+  if (type(contextualizable) == type('')):
+    word =contextualizable
+  elif (type(contextualizable) == type(()) and len(contextualizable) == 3):
+    word, start, end = contextualizable
+  elif (type(contextualizable) == type(()) and len(contextualizable) == 2):
+    start, end = contextualizable
+  else:
+    return None
+
+  context = None
+
+  """
+  Itera sobre todos los posibles delimitadores de frases hasta entrar la frase más corta que contiene la palabra de interés
+  El resultado es más preciso cuando se especifica la posicion de la palabra de interés mediante una tupla (palabra, inicio, fin) o (inicio, fin)
+  """
+  if (start and end):
+    length = end-start
+    for wrapper in phraseWrappers:
+      firstPartRegex = '(?<='+wrapper[0]+')([^'+re.sub('(?<=[^\\\\])[|$]|^\(|(?<=[^\\\\])\)$','',wrapper[1])+']{0,'+str(start)+'}?)'
+      begining = re.search(firstPartRegex+'$', sentence[:start], re.IGNORECASE)
+      if begining:
+
+        match = re.search(
+          '(.{'+str(begining.start())+'})('+firstPartRegex+'('+re.escape(sentence[start:end])+')(.*?)'+'(?='+wrapper[1]+'))'
+          , sentence
+          , re.IGNORECASE)
+        if match and (not context or len(context)> len(match.group(2))):
+          context = match.group(2)
+  elif word:
+    """
+    whileExecuted = False
+    auxContext = None
+    while auxContext != context or not whileExecuted:
+      whileExecuted = True#if (type(contextualizable) == type('')) word =contextualizable
+      auxContext = context
+      for wrapper in phraseWrappers:
+
+        match = re.search('(?<='+wrapper[0] + ')[^(' + wrapper[1]+')]+?'+re.escape(word)+'.*?(?='+wrapper[1]+')', context if context else sentence, re.IGNORECASE)
+        if match:
+          context = match.group(0)
+    """
+    pass
+  """
+  context = context.strip(' "\t\r\n' + string.punctuation);
+
+
+  """
+  """
+  strippableWords = ('normas?', 'mexicanas?', 'emergencia', 'indican?', 'n[uú]meros?', '\d+' , 'y', 'de', 'a', 'las?', 'que', 'se', ',')
+  stripWordsRegex = '(?i)'
+
+  for word in strippableWords:
+    stripWordsRegex += '(^'+word + '\s+)|(\s+'+word+'$)|'
+  stripWordsRegex = stripWordsRegex.strip('|')
+
+  #print(stripWordsRegex)
+  whileExecuted = False
+  auxContext = None
+  while auxContext != context or not whileExecuted:
+    whileExecuted = True
+    auxContext = context
+    context = re.sub(stripWordsRegex, '', context, re.IGNORECASE).strip()
+  """
+  return context
+
+def stringFeatures(context):
+  featureset = {}
+  context = re.sub('(?i)(normas?\s+mexicanas?).*', '', context)
+  context = re.sub('(?<=^)?(?<=\s)?[^\s]*?\-[^\s]*?(?=$|\s|,\s)', '', context).strip("y, ")
+
+  atricles = ('el', 'las?', 'los', 'un(a|os|as)', 'lo', 'al', 'a la', 'del', 'de el', 'de', 'a', '\d+', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diiembre', 'esta', 'normas?')
+  removeArticlesRegex = '(?i)'
+
+  for article in atricles:
+    removeArticlesRegex += '((?<=^)|(?<=\s))'+article + '(?=['+string.punctuation+'\s]|$)|'
+  removeArticlesRegex = removeArticlesRegex.strip('|')
+
+  context = re.sub(removeArticlesRegex, '', context)
+  context = re.sub('\s+(,?)', r"\1 ", context).strip(", y")
+  context = re.sub('\s+', " ", context).upper().replace('P??BLICA', 'PÚBLICA').replace('ACLARACI??N', 'ACLARACIÓN').replace('CANCELACI??N', 'CANCELACIÓN').replace('|', '');
+
+  context = re.sub('(?i)(,|(?<=[^\w])(para|sobre|mediante|y)(?=[^\w])).*', '', context).strip("y, ")
+
+  #for word in wordsArray:
+  #  if word in featureset.keys():
+  #    featureset[word] = featureset[word]+1;
+  #  else:
+  #    featureset[word] = 1;
+
+  featureset['context_summary'] = context
+  #featureset['firstword'] = wordsArray[0]
+  #featureset['lastword'] = wordsArray[-1]
+  #featureset['countwords'] = len(wordsArray)
+  return featureset
+
+
+def normalizeNMX(word):
+  clave = re.sub('(?i)d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}', 'NMX-', word);
+  clave = re.sub('[^\d\w/]+', '-', clave);
+  clave = re.sub('-(\d)-', r'-00\1-', clave);
+  clave = re.sub('-(\d{2})-', r'-0\1-', clave);
+  return clave
+
+def findTokens(sentences, match):
+  contextualizedTokens = []
+
+  for sentence in sentences:
+    sentence = sentence.strip('\n\r\t"')
+    tokensOfInterest = [(m.group(1), m.start(), m.end()) for m in re.finditer(match,sentence, re.IGNORECASE)]
+    for token in tokensOfInterest:
+      word, start, end = token
+      context = getContextV2((word, start, end), sentence)
+      if (context):
+        features = stringFeatures(context)
+        #contextualizedTokens.append((word, ''));
+        clave = normalizeNMX(word);
+        contextualizedTokens.append((word, clave, sentence, context, '',features));
+  return contextualizedTokens
+
+def main():
+  sentences, inputFile, inputTraining, match = readInput()
+
+  writer = csv.writer(sys.stdout, quoting=csv.QUOTE_ALL)
+  writer.writerow(['clave_nmx', 'clave', 'titulo_nota', 'contexto_clave_nmx', 'categoria', 'features'])
+
+  tokensOfInteres = findTokens(sentences if sentences else fileinput.input(inputFile), match)
+
+  
+  for token in tokensOfInteres:
+    writer.writerow(token)
+    #sys.exit()
+  
+      
+  """
+  if (inputTraining):
+    trainingSet = getTrainingSet(inputTraining);
+    classifier = nltk.NaiveBayesClassifier.train(trainingSet)
+      
+    for tokenType, pattern in patterns:
+      claves = findClaves(sentence, pattern)
+
+      for clave in claves:
+        features = getFeatures(clave, sentence)
+        print (tokenType + "\t" + clave + "\t" + classifier.classify(features))
+  """      
 
   
 if __name__ == "__main__":
-   main(sys.argv[1:])
+   main()

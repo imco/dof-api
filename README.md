@@ -9,9 +9,8 @@ Utiliza el Webservice del DOF para copiar la información a una base de datos lo
 *[Licencia](#licencia)
 
 ## Instalación
-### Requerimientos de sistema
-* PostgreSQL
-* Laravel 5
+### Clasificador
+El clasificador es un script de Python3, el cuál utiliza la libreria NLTK http://www.nltk.org/ junto con el paquete "punkt"
 
 ### Actualización autmática de la Base de Datos
 Para mantener actualizada la Base de datos se hace uso de la funcionalidad de tareas programadas de Laravel, para ejecutarlo es necesario agregar las siguientes lineas en `app/Console/Kernel.php`

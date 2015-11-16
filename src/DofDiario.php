@@ -7,7 +7,7 @@ use DOMDocument;
 
 class DofDiario extends Model
 {
-    protected $connection = 'CatalogoNoms';
+    protected $connection = 'catalogoNoms';
     protected $primaryKey = 'cod_diario';
     protected $fillable = array('cod_diario', 'fecha', 'edicion','availablePdf');
 

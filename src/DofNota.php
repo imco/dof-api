@@ -6,8 +6,9 @@ use DOMDocument;
 
 class DofNota extends Model
 {
-    protected $connection = 'CatalogoNoms';
+    protected $connection = 'catalogoNoms';
     protected $primaryKey = 'cod_nota';
+    protected $table = 'dof_notas';
     protected $fillable = array('cod_diario', 'cod_nota', 'titulo', 'contenido', 'pagina', 'secretaria', 'organismo', 'seccion');
 
     public function updateTitulo(){

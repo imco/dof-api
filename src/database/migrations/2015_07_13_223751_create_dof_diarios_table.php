@@ -10,7 +10,7 @@ class CreateDofDiariosTable extends Migration
      *
      * @return void
      */
-    protected $connection = 'CatalogoNoms';
+    protected $connection = 'catalogoNoms';
 
     public function up()
     {

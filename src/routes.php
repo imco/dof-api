@@ -11,6 +11,15 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 /**
  *		@SWG\Path(
+ *			path = "/catalogonoms/dof/notas",
+ *			@SWG\Get(
+ *				summary = "Notas publicadas en el DOF",
+ *				description = "CSV con las notas descargadas de publicaciones del DOF.",
+ *				tags = {"CatalogoNOMs"},
+ *				@SWG\Response(response = "200", description = "CSV con las notas descargadas de publicaciones del DOF", @SWG\Schema(type = "csv"))
+ * 			)
+ *		)
+ *		@SWG\Path(
  *			path = "/catalogonoms/dof/edicion/{año}/{mes}/{dia}",
  *			@SWG\Get(
  *				summary = "Lista de ediciones por día.",
@@ -87,8 +96,21 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
  */
 
 	Route::group(array('prefix' => 'dof'), function () {
+		Route::get('{resource}', 'DatasetController@getCSV');
 		Route::get('edicion/{year}/{month?}/{day?}', 'DOFClientController@getEditionsOnDate');
 		Route::get('sumario/{year}/{month}/{day}', 'DOFClientController@getDateSummary');	
+	});
+
+
+	Route::get('/', function(){
+	    return view('catalogonoms::presentacion');
+	});
+	Route::get('/normas-vigentes', function(){
+	    return view('catalogonoms::normas-vigentes');
+	});
+
+	Route::get('/detalle-norma/{clave}', function($clave){
+	    return view('catalogonoms::detalle-norma', ['clave'=>$clave]);
 	});
 
 
