@@ -28,7 +28,7 @@ class NormaVigente extends Model
     	// Las claves de normas no necesariamente tienen el prefijo NMX
     	$result = preg_replace('/.*nmx[^\d\w]*/i', '[^\s>]*', $result);
     	// El separador podría ser cualquier cosa no alafanumérica
-    	$result = preg_replace('/-/', '[^\d\w]{0,3}', $result);
+    	$result = preg_replace('/[-\/]/', '[^\d\w]{0,3}', $result);
 
 
     	return "($result)";
