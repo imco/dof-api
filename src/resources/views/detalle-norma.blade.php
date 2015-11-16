@@ -6,12 +6,17 @@
 
 <?php
 
-	$vigentes = App::make('IMCO\CatalogoNOMsApi\NormaVigente')->where('clave', $clave)->get();
+	$norma = App::make('IMCO\CatalogoNOMsApi\NormaVigente')->where('clave', $clave)->first();
 	print_r('<table>');
-	foreach($vigentes as $norma){
+	//foreach($vigentes as $norma){
 		print_r('<tr>');
 		print_r("<td>Clave: </td>");
 		print_r("<td>".$norma->clave."</td>");
+		print_r('</tr>');
+
+		print_r('<tr>');
+		print_r("<td>Patrón de la clave: </td>");
+		print_r("<td>".$norma->clave_patron()."</td>");
 		print_r('</tr>');
 
 		print_r('<tr>');
@@ -54,7 +59,7 @@
 		print_r("<td>ONN: </td>");
 		print_r("<td>".$norma->onn."</td>");
 		print_r('</tr>');
-	}
+	//}
 
 	print_r('</table>');
 ?>

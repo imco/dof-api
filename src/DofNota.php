@@ -3,6 +3,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use DOMDocument;
+use DB;
 
 class DofNota extends Model
 {
@@ -10,6 +11,16 @@ class DofNota extends Model
     protected $primaryKey = 'cod_nota';
     protected $table = 'dof_notas';
     protected $fillable = array('cod_diario', 'cod_nota', 'titulo', 'contenido', 'pagina', 'secretaria', 'organismo', 'seccion');
+
+
+    public function scopeBodyContains($query, $clave){
+    	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(contenido, '".$clave."', 'gi'))[1] as clave"))->whereRaw("contenido ~* '$clave'");
+    }
+
+    public function scopeTitleContains($query, $clave){
+    	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(titulo, '".$clave."', 'ig'))[1] as clave"))->whereRaw("contenido ~* '$clave'");
+    }
+
 
     public function updateTitulo(){
     	$decretoFull = NULL;

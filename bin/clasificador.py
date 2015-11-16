@@ -137,7 +137,7 @@ def readInput():
 
 def getContextV2(contextualizable, sentence):
   word, start, end = None, None, None
-  """El contenedor de una frase se define comoo una tupla de expresiones regulares que identifican un inicio y un final"""
+  """El contenedor de una frase se define como una tupla de expresiones regulares que identifican un inicio y un final"""
   phraseWrappers = [('\(', '\)'), ('\.\s', '(\.|$)'), ('^', '(\.|$)')]
 
   # Cuando la clase es un string 

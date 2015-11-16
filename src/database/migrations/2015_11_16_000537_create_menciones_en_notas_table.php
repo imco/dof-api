@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNormasVigentesTable extends Migration
+class CreateMencionesEnNotasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,18 +14,11 @@ class CreateNormasVigentesTable extends Migration
 
     public function up()
     {
-        Schema::connection($this->connection)->create('normas_vigentes', function (Blueprint $table) {
-            $table->increments('id_norma');
+        Schema::connection($this->connection)->create('menciones_en_notas', function (Blueprint $table) {
+            $table->increments('id_mencion_en_nota');
             $table->string('clave');
-            $table->string('secretaria');
-            $table->string('titulo');
-            $table->string('archivo');
-            $table->date('fecha_publicacion');
-            $table->string('tipo');
-            $table->string('producto');
-            $table->string('rama_economica');
-            $table->string('ctnn');
-            $table->string('onn');
+            $table->integer('cod_nota');
+            $table->string('ubicacion')->nullable();
             $table->timestamps();
 
             //$table->index()
@@ -42,6 +35,6 @@ class CreateNormasVigentesTable extends Migration
     public function down()
     {
         //DB::connection($this->connection)->statement('DROP VIEW catalogonoms_view_nmx');
-        Schema::connection($this->connection)->drop('normas_vigentes');
+        Schema::connection($this->connection)->drop('menciones_en_notas');
     }
 }
