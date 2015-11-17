@@ -13,6 +13,9 @@ class DofNota extends Model
     protected $fillable = array('cod_diario', 'cod_nota', 'titulo', 'contenido', 'pagina', 'secretaria', 'organismo', 'seccion');
 
 
+    public function diario(){
+    	return $this->belongsTo('IMCO\CatalogoNOMsApi\DofDiario', 'cod_diario', 'cod_diario');
+    }
     public function scopeBodyContains($query, $clave){
     	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(contenido, '".$clave."', 'gi'))[1] as clave"))->whereRaw("contenido ~* '$clave'");
     }

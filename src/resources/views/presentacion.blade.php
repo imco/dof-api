@@ -1,5 +1,7 @@
-<?php
+<?php 
 	use IMCO\CatalogoNOMsApi\NormaVigente;
+	use IMCO\CatalogoNOMsApi\DofNota;
+	use IMCO\CatalogoNOMsApi\MencionEnNota;
 ?>
 <html>
 
@@ -14,5 +16,23 @@ Se han descargado <?php echo App::make('IMCO\CatalogoNOMsApi\NormaVigente')->cou
 	<li><a href="/catalogonoms/error/fecha-publicacion"><?php echo NormaVigente::conFechaPublicacionIncorrecta()->count();?> Normas vigentes</a> con una fecha de publicación en la que no existe publicación del Diario Oficial de la Federación</li>
 	<li><a href="/catalogonoms/error/no-localizadas"><?php echo NormaVigente::has('menciones', '<', 1)->count();?> Normas vigentes</a> que con el método actuál no han podido ser localizadas en publicaciones del DOF</li>
 </ul>
+
+<?php echo DofNota::count();?>
+
+<?php echo MencionEnNota::count();?>
+
+<?php echo MencionEnNota::select('clave')->distinct('clave')->count('clave');?>
+
+
+<p>Resultados:</p>
+<ul>
+	<li>De las <?php echo NormaVigente::count();?> normas vigentes se han localizado <a href="/catalogonoms/resultados/menciones"><?php echo NormaVigente::has('menciones', '>=', 1)->count();?> con menciones en el DOF</a></li>
+	
+</ul>
+
+
+
+
+
 </body>
 </html>

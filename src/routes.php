@@ -125,6 +125,13 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 	});
 
+	Route::group(array('prefix' => 'resultados'), function () {
+		Route::get('/menciones', function(){
+		    return view('catalogonoms::resultados-menciones');
+		});
+
+	});
+
 	Route::get('test', function(){
 		$locale='es_MX.UTF-8';
 		setlocale(LC_ALL,$locale);

@@ -11,4 +11,8 @@ class MencionEnNota extends Model
     protected $table = 'menciones_en_notas';
     protected $fillable = ["clave","cod_nota", "ubicacion"];
     
+
+    public function nota(){
+    	return $this->hasOne('IMCO\CatalogoNOMsApi\DofNota', 'cod_nota', 'cod_nota');
+    }
 }
