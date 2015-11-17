@@ -125,6 +125,15 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 	});
 
+	Route::group(array('prefix' => 'download'), function () {
+		Route::get('/menciones-nmx', 'DatasetController@getMencionesCSV');
+
+		Route::get('/no-localizadas', function(){
+		    return view('catalogonoms::no-localizadas');
+		});
+
+	});
+
 	Route::group(array('prefix' => 'resultados'), function () {
 		Route::get('/menciones', function(){
 		    return view('catalogonoms::resultados-menciones');
