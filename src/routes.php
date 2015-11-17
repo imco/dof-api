@@ -111,7 +111,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 	Route::get('/detalle-norma/{clave}', function($clave){
 	    return view('catalogonoms::detalle-norma', ['clave'=>$clave]);
-	});
+	})->where('clave', '(.*)');
 
 
 	Route::group(array('prefix' => 'error'), function () {

@@ -17,6 +17,7 @@ class CatalogoNOMsApiServiceProvider extends ServiceProvider {
 		$this->publishes([__DIR__.'/database/data' => base_path('database/data')]);
 		$this->publishes([__DIR__.'/database/migrations' => base_path('database/migrations')]);
 		$this->publishes([__DIR__.'/database/seeds' => base_path('database/seeds')]);
+		$this->publishes([__DIR__.'/../public/nmx-knowledgeBase.csv' => base_path('public/vendor/imco/catalogonoms-api/nmx-knowledgeBase.csv')]);
 
 		//$this->publishes([__DIR__.'/resources' => base_path('resources/vendor/imco/catalogo-noms/')]);
 		$this->loadViewsFrom(__DIR__.'/resources/views', 'catalogonoms');

@@ -1,2 +1,3 @@
 .~*
 *.csv
+!public/nmx-knowledgeBase.csv

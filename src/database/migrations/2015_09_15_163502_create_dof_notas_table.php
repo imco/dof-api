@@ -23,6 +23,7 @@ class CreateDofNotasTable extends Migration
             $table->string('secretaria');
             $table->integer('pagina');
             $table->text('contenido')->nullable();
+            $table->text('contenido_plano')->nullable();
 
             $table->timestamps();
             $table->primary('cod_nota');

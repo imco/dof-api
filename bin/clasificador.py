@@ -46,6 +46,41 @@ def getFeatures(clavenom,oracion):
   #featureset['countwords'] = len(wordsArray)
   return featureset if len(context)>0 else ''
 
+def getTrainingSetV2(file):
+  f = open(file, 'rt', encoding='utf-8')
+  trainingSet = []
+  titulo = None
+  claveNom = None
+  etiqueta = None
+  line = 0
+  try:
+    reader = csv.reader(f)
+    for row in reader:
+      for index,field in enumerate(row):
+        if line == 0:
+          if field == 'titulo':
+            titulo = index
+          elif field == 'clave':
+            claveNom = index
+          elif field == 'etiqueta':
+            etiqueta = index
+        elif titulo== None or claveNom== None or etiqueta== None:
+          print(str(line) + "\t" + str(not titulo or not claveNom or not etiqueta))
+          print(str(titulo) + "\t" + str(claveNom) + "\t" + str(etiqueta))
+          print('El archivo debe contener como mínimo los campos "titulo", "clave" y "etiqueta"')
+          sys.exit(2)
+        else:
+          tokens = findTokens(row[titulo], row[claveNom])
+          #print(tokens)
+          for token in tokens:
+            #print(token[-1])
+            trainingSet.append((token[-1], row[etiqueta]))
+      line += 1
+  finally:
+    f.close()
+  return trainingSet
+
+
 def getTrainingSet(file):
   f = open(file, 'rt', encoding='utf-8')
   trainingSet = []
@@ -60,14 +95,14 @@ def getTrainingSet(file):
         if line == 0:
           if field == 'titulo':
             titulo = index
-          elif field == 'clavenom':
+          elif field == 'clave':
             claveNom = index
           elif field == 'etiqueta':
             etiqueta = index
         elif titulo== None or claveNom== None or etiqueta== None:
           print(str(line) + "\t" + str(not titulo or not claveNom or not etiqueta))
           print(str(titulo) + "\t" + str(claveNom) + "\t" + str(etiqueta))
-          print('El archivo debe contener como mínimo los campos "titulo", "clavenom" y "etiqueta"')
+          print('El archivo debe contener como mínimo los campos "titulo", "clave" y "etiqueta"')
           sys.exit(2)
         else:
           features = getFeatures(row[claveNom], row[titulo])
@@ -111,9 +146,10 @@ def readInput():
   sentence = None
   inputFile = None
   match = None
+  header = True
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:],"ht:f:m:",["help", "training-file=", "input-file=", "match="])
+    opts, args = getopt.getopt(sys.argv[1:],"ht:f:m:l",["help", "training-file=", "input-file=", "match=", "headerless"])
     for opt, value in opts:
       if opt in ("-t", "--training-file"):
         inputTraining = value
@@ -121,6 +157,8 @@ def readInput():
         inputFile = value
       elif opt in ('-m' , '--match'):
         match = value
+      elif opt in ('-l' , '--headerless'):
+        header = False
       elif opt in ('-h', '--help'):
         usageMenu()
         sys.exit()        
@@ -133,7 +171,7 @@ def readInput():
     del sys.argv[1]
 
 
-  return sentence, inputFile, inputTraining, match
+  return sentence, inputFile, inputTraining, match, header
 
 def getContextV2(contextualizable, sentence):
   word, start, end = None, None, None
@@ -206,8 +244,10 @@ def getContextV2(contextualizable, sentence):
   """
   return context
 
-def stringFeatures(context):
+def stringFeatures(inputString):
   featureset = {}
+  inputString = inputString.lower()
+  context = inputString
   context = re.sub('(?i)(normas?\s+mexicanas?).*', '', context)
   context = re.sub('(?<=^)?(?<=\s)?[^\s]*?\-[^\s]*?(?=$|\s|,\s)', '', context).strip("y, ")
 
@@ -223,6 +263,11 @@ def stringFeatures(context):
   context = re.sub('\s+', " ", context).upper().replace('P??BLICA', 'PÚBLICA').replace('ACLARACI??N', 'ACLARACIÓN').replace('CANCELACI??N', 'CANCELACIÓN').replace('|', '');
 
   context = re.sub('(?i)(,|(?<=[^\w])(para|sobre|mediante|y)(?=[^\w])).*', '', context).strip("y, ")
+
+  clearInput = re.sub('[^\s]+[^\d\w\s]+[^\s]*', '', inputString)
+  for word in nltk.word_tokenize(context):
+    if (len(word)>4):
+      featureset['contains({})'.format(word.lower())] = True
 
   #for word in wordsArray:
   #  if word in featureset.keys():
@@ -242,14 +287,18 @@ def normalizeNMX(word):
   clave = re.sub('[^\d\w/]+', '-', clave);
   clave = re.sub('-(\d)-', r'-00\1-', clave);
   clave = re.sub('-(\d{2})-', r'-0\1-', clave);
+  clave = re.sub('[^\d\w]+$', '', clave);
   return clave
 
-def findTokens(sentences, match):
+def findTokens(sentences, match, pre=None):
   contextualizedTokens = []
 
+  if (type(sentences) == type('')):
+    sentences = {sentences}
   for sentence in sentences:
+    #print(sentence, match)
     sentence = sentence.strip('\n\r\t"')
-    tokensOfInterest = [(m.group(1), m.start(), m.end()) for m in re.finditer(match,sentence, re.IGNORECASE)]
+    tokensOfInterest = [(m.group(0), m.start(), m.end()) for m in re.finditer(match,sentence, re.IGNORECASE)]
     for token in tokensOfInterest:
       word, start, end = token
       context = getContextV2((word, start, end), sentence)
@@ -257,28 +306,50 @@ def findTokens(sentences, match):
         features = stringFeatures(context)
         #contextualizedTokens.append((word, ''));
         clave = normalizeNMX(word);
-        contextualizedTokens.append((word, clave, sentence, context, '',features));
+        contextualizedTokens.append(((pre if pre != None else [])+[word, clave, sentence, context, '',features]));
   return contextualizedTokens
 
 def main():
-  sentences, inputFile, inputTraining, match = readInput()
+  sentences, inputFile, inputTraining, match, header = readInput()
 
   writer = csv.writer(sys.stdout, quoting=csv.QUOTE_ALL)
-  writer.writerow(['clave_nmx', 'clave', 'titulo_nota', 'contexto_clave_nmx', 'categoria', 'features'])
 
-  tokensOfInteres = findTokens(sentences if sentences else fileinput.input(inputFile), match)
+  headerString = []
 
+  if (not sentences and inputFile):
+    match = match.split(',');
+
+    if(len(match)==2):
+      reader = csv.reader(open(inputFile))
+      match[0] = int(match[0])
+      match[1] = int(match[1])
+
+      tokensOfInterest = []
+      line = 0
+      for row in reader:
+        if (line==0):
+          headerString = row
+        else:
+          tokensOfInterest += findTokens(row[match[1]-1], re.escape(row[match[0]-1]), row)
+        line +=1
+  else:
+    tokensOfInterest = findTokens(sentences if sentences else fileinput.input(inputFile), match)
+
+  if (header):
+    writer.writerow(headerString + ['clave_nmx', 'clave', 'titulo_nota', 'contexto_clave_nmx', 'categoria', 'features'])
   
-  for token in tokensOfInteres:
-    writer.writerow(token)
+  
     #sys.exit()
   
       
-  """
+  
   if (inputTraining):
-    trainingSet = getTrainingSet(inputTraining);
+    trainingSet = getTrainingSetV2(inputTraining);
     classifier = nltk.NaiveBayesClassifier.train(trainingSet)
-      
+
+    for token in tokensOfInterest:
+      writer.writerow(token[0:-3]+ [classifier.classify(token[-1]), token[-1]])
+  """
     for tokenType, pattern in patterns:
       claves = findClaves(sentence, pattern)
 
