@@ -27,6 +27,9 @@ Se han descargado <?php echo App::make('IMCO\CatalogoNOMsApi\NormaVigente')->cou
 <p>Resultados:</p>
 <ul>
 	<li>De las <?php echo NormaVigente::count();?> normas vigentes se han localizado <a href="/catalogonoms/resultados/menciones"><?php echo NormaVigente::has('menciones', '>=', 1)->count();?> con menciones en el DOF</a></li>
+	<li><a href="/catalogonoms/resultados/proyectos"><?php echo NormaVigente::whereHas('menciones', function ($query){
+		$query->where('etiqueta', 'Proyecto');})->count(); ?> Normas con proyecto</a></li>
+
 	
 </ul>
 

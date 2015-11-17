@@ -138,6 +138,9 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 		Route::get('/menciones', function(){
 		    return view('catalogonoms::resultados-menciones');
 		});
+		Route::get('/proyectos', function(){
+		    return view('catalogonoms::resultados-proyectos');
+		});
 
 	});
 
