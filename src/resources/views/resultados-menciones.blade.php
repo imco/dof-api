@@ -38,7 +38,7 @@
 			<body>');
 
 		print_r('<table>');
-				print_r('<tr><td><a href="'.$vigentes->previousPageUrl().'">Anterior</a></td><td><a href="'.$vigentes->appends(['download'=>True]).'">Descargar</a></td><td><a href="'.$vigentes->nextPageUrl().'">Siguiente</a></td><!--td>Archivo</td--></tr>');
+				print_r('<tr><td><a href="'.$vigentes->previousPageUrl().'">Anterior</a></td><td><a href="/catalognoms/resultados/menciones?download=1">Descargar CSV completo</a></td><td><a href="'.$vigentes->nextPageUrl().'">Siguiente</a></td><!--td>Archivo</td--></tr>');
 		print_r('<tr><td>Clave</td><td>Fecha de publicación</td><td>Título</td><!--td>Archivo</td--></tr>');
 		foreach($vigentes as $norma){
 			foreach($norma->menciones AS $mencion){
