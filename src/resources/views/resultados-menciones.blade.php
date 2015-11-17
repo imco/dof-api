@@ -34,11 +34,11 @@
 		//print_r();
 
 		print_r('<html>
-			<head><title>Normas no localizadas</title></head>
+			<head><title>Menciones de NMX en el DOF</title></head>
 			<body>');
 
 		print_r('<table>');
-				print_r('<tr><td><a href="'.$vigentes->previousPageUrl().'">Anterior</a></td><td></td><td><a href="'.$vigentes->nextPageUrl().'">Siguiente</a></td><!--td>Archivo</td--></tr>');
+				print_r('<tr><td><a href="'.$vigentes->previousPageUrl().'">Anterior</a></td><td><a href="'.$vigentes->appends(['download'=>True]).'">Descargar</a></td><td><a href="'.$vigentes->nextPageUrl().'">Siguiente</a></td><!--td>Archivo</td--></tr>');
 		print_r('<tr><td>Clave</td><td>Fecha de publicación</td><td>Título</td><!--td>Archivo</td--></tr>');
 		foreach($vigentes as $norma){
 			foreach($norma->menciones AS $mencion){
