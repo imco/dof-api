@@ -4,6 +4,8 @@
 <?php
 
 	if (\Input::get('download')){
+		ini_set('memory_limit', '128M')
+
 		$requestedFile = '/tmp/mencionesNmx.csv';
 
 		if (!file_exists($requestedFile)){
