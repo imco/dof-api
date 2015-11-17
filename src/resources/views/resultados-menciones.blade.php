@@ -25,7 +25,7 @@
 
 		$result = NormaVigente::with(['menciones.nota.diario', 'menciones.nota'])->has('menciones')->paginate(50);
 
-		$vigentes = $result->data;
+		//$vigentes = $result->get();
 
 		print_r($result->previousPageUrl());
 		print_r($result->nextPageUrl());
