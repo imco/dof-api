@@ -4,7 +4,7 @@
 <?php
 
 	if (\Input::get('download')){
-		ini_set('memory_limit', '256M');
+		ini_set('memory_limit', '512M');
 
 		$requestedFile = '/tmp/mencionesNmx.csv';
 
