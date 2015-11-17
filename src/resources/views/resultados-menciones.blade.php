@@ -23,7 +23,7 @@
 		}
 	}else{
 
-		$result = NormaVigente::with(['menciones.nota.diario', 'menciones.nota'])->has('menciones')->pagination(50);
+		$result = NormaVigente::with(['menciones.nota.diario', 'menciones.nota'])->has('menciones')->paginate(50);
 
 		$vigentes = $result->data;
 
