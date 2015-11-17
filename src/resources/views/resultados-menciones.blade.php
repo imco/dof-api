@@ -23,17 +23,19 @@
 		}
 	}else{
 
-		$result = NormaVigente::with(['menciones.nota.diario', 'menciones.nota'])->has('menciones')->paginate(50);
+		$vigentes = NormaVigente::with(['menciones.nota.diario', 'menciones.nota'])->has('menciones')->paginate(50);
 
-		$vigentes = $result->get();
+		//$vigentes = $result->get();
 
-		print_r($result->previousPageUrl());
-		print_r($result->nextPageUrl());
-/*
+		//print_r();
+		//print_r();
+
 		print_r('<html>
 			<head><title>Normas no localizadas</title></head>
 			<body>');
+
 		print_r('<table>');
+				print_r('<tr><td><a href="'.$vigentes->previousPageUrl().'">Anterior</a></td><td></td><td><a href="'.$vigentes->nextPageUrl().'">Siguiente</a></td><!--td>Archivo</td--></tr>');
 		print_r('<tr><td>Clave</td><td>Fecha de publicación</td><td>Título</td><!--td>Archivo</td--></tr>');
 		foreach($vigentes as $norma){
 			foreach($norma->menciones AS $mencion){
@@ -49,6 +51,6 @@
 		print_r('</table>');
 		print_r('</body>
 				</html>');
-				*/
+				
 	}
 ?>
