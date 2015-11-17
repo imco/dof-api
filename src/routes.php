@@ -118,6 +118,11 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 		Route::get('/fecha-publicacion', function(){
 		    return view('catalogonoms::error-fecha-publicacion');
 		});
+
+		Route::get('/no-localizadas', function(){
+		    return view('catalogonoms::no-localizadas');
+		});
+
 	});
 
 	Route::get('test', function(){

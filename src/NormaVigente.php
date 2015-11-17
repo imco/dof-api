@@ -33,4 +33,9 @@ class NormaVigente extends Model
 
     	return "($result)";
     }
+
+
+    public function menciones(){
+    	return $this->hasMany('IMCO\CatalogoNOMsApi\MencionEnNota', 'clave', 'clave');
+    }
 }
