@@ -4,10 +4,11 @@
 <?php
 
 	if (\Input::get('download')){
-		$vigentes = NormaVigente::with(['menciones.nota.diario', 'menciones.nota'])->has('menciones')->get();
 		$requestedFile = '/tmp/mencionesNmx.csv';
 
 		if (!file_exists($requestedFile)){
+			$vigentes = NormaVigente::with(['menciones.nota.diario', 'menciones.nota'])->has('menciones')->get();
+		
 			$file = fopen($requestedFile,"w");
 
 			fputcsv($file,['clave', 'fecha', 'cod_nota', 'titulo']);
@@ -19,6 +20,8 @@
 
 			fclose($file);
 
+			return \Response::download($requestedFile);
+		}else{
 			return \Response::download($requestedFile);
 		}
 	}else{
@@ -42,7 +45,7 @@
 				print_r('<tr>');
 				print_r("<td><a href=\"/catalogonoms/detalle-norma/$norma->clave\">".$norma->clave."</a></td>");
 				print_r("<td><a target=\"_blank\" href=\"http://anonymouse.org/cgi-bin/anon-www.cgi/http://www.dof.gob.mx/index.php?year=". explode('-', $norma->fecha_publicacion)[0] ."&month=". explode('-', $norma->fecha_publicacion)[1] ."&day=". explode('-', $norma->fecha_publicacion)[2] ."\">".$norma->fecha_publicacion."</td>");
-				print_r("<td><a target=\"_blank\" href=\"http://anonymouse.org/cgi-bin/anon-www.cgi/http://dof.gob.mx/nota_detalle.php?codigo=".$mencion->cod_nota."&fecha=". explode('-', $mencion->nota->diario->fecha)[2] ."/". explode('-', $mencion->nota->diario->fecha)[1] ."/". explode('-', $mencion->nota->diario->fecha)[0] ."\">".$mencion->titulo."</a></td>");
+				print_r("<td><a target=\"_blank\" href=\"http://anonymouse.org/cgi-bin/anon-www.cgi/http://dof.gob.mx/nota_detalle.php?codigo=".$mencion->cod_nota."&fecha=". explode('-', $mencion->nota->diario->fecha)[2] ."/". explode('-', $mencion->nota->diario->fecha)[1] ."/". explode('-', $mencion->nota->diario->fecha)[0] ."\">".$mencion->nota->titulo."</a></td>");
 				//print_r("<td> <a href=\"$norma->archivo\">".$norma->archivo."</a></td>");
 				print_r('</tr>');
 			}
