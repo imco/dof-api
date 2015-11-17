@@ -4,12 +4,14 @@
 <?php
 
 	if (\Input::get('download')){
-		ini_set('memory_limit', '-1');
+		//ini_set('memory_limit', '-1');
 
 		$requestedFile = '/tmp/mencionesNmx.csv';
 
 		if (!file_exists($requestedFile)){
-			$vigentes = NormaVigente::with(['menciones.nota.diario', 'menciones.nota'])->has('menciones')->get();
+			$vigentes = NormaVigente::with(['menciones.nota'=>function ($query){
+				$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
+			}])->has('menciones')->get();
 		
 			$file = fopen($requestedFile,"w");
 
@@ -28,7 +30,9 @@
 		}
 	}else{
 
-		$vigentes = NormaVigente::with(['menciones.nota.diario', 'menciones.nota'])->has('menciones')->paginate(50);
+		$vigentes = NormaVigente::with(['menciones.nota'=>function ($query){
+				$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
+			}])->has('menciones')->paginate(50);
 
 		print_r('<html>
 			<head><title>Menciones de NMX en el DOF</title></head>
