@@ -2,6 +2,7 @@
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use DateTime;
 
 class DatasetController extends Controller {
 	protected $connection = 'catalogoNoms';
@@ -14,13 +15,16 @@ class DatasetController extends Controller {
 		//if (!file_exists($requestedFile)){
 			$vigentes = NormaVigente::with(['menciones.nota'=>function ($query){
 				$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
-			}])->has('menciones')->get();
+			}])->has('menciones')->orderBy('clave')->get();
 		
 			$file = fopen($requestedFile,"w");
 
 			fputcsv($file,['clave', 'fecha', 'cod_nota', 'titulo']);
 			foreach($vigentes as $norma){
-				foreach($norma->menciones AS $mencion){
+				$menciones =$norma->menciones->sortBy(function($mencion, $key){
+					return DateTime::createFromFormat ( 'Y-m-d' , $mencion->nota->diario->fecha);
+				});
+				foreach($menciones AS $mencion){
 					fputcsv($file,[$norma->clave, $mencion->nota->diario->fecha, $mencion->cod_nota, $mencion->nota->titulo]);
 				}
 			}
