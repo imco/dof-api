@@ -17,11 +17,11 @@ class DofNota extends Model
     	return $this->belongsTo('IMCO\CatalogoNOMsApi\DofDiario', 'cod_diario', 'cod_diario');
     }
     public function scopeBodyContains($query, $clave){
-    	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(contenido, '".$clave."', 'gi'))[1] as mencion"))->whereRaw("contenido ~* '$clave'");
+    	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(contenido, '".$clave."', 'gi'))[1] as mencion"));
     }
 
     public function scopeTitleContains($query, $clave){
-    	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(titulo, '".$clave."', 'ig'))[1] as mencion"))->whereRaw("contenido ~* '$clave'");
+    	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(titulo, '".$clave."', 'ig'))[1] as mencion"));
     }
 
 
