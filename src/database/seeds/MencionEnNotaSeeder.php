@@ -46,10 +46,14 @@ class MencionEnNotaSeeder extends Seeder
                 $mencion->ubicacion= 'Título';
             }
 
-            if (!in_array($mencion->clave, ['dgn1.html', 'dgnon','dgning', 'dgn.karla@economia.gob.mx', 'nmx.gob.mx/normasmx/index.nmx', 'nmx.gob.mx/normasmx/', 'nmx@prodigy.net.mx', "d;'>gnidad", 'nmx.carbonoforestal@semarnat.gob.mx', "d;'>gnar"]))
-            print_r("Match:\t$mencion->clave\t$mencion->ubicacion\t$mencion->cod_nota\n");
-            MencionEnNota::create(array('cod_nota'=>$mencion->cod_nota, 'clave'=> $mencion->clave, 'ubicacion'=>$mencion->ubicacion));
+            if (!in_array($mencion->clave, ['dgn1.html', 'dgnon','dgning', 'dgn.karla@economia.gob.mx', 'nmx.gob.mx/normasmx/index.nmx', 'nmx.gob.mx/normasmx/', 'nmx@prodigy.net.mx', "d;'>gnidad", 'nmx.carbonoforestal@semarnat.gob.mx', "d;'>gnar"])){
+                print_r("Match:\t$mencion->clave\t$mencion->ubicacion\t$mencion->cod_nota\n");
+                MencionEnNota::create(array('cod_nota'=>$mencion->cod_nota, 'clave'=> $mencion->clave, 'ubicacion'=>$mencion->ubicacion));
+            }
         }
+
+
+
 
         $menciones = MencionEnNota::with(['nota'=>function($query){
             $query->select('cod_nota', 'cod_diario', 'titulo');
