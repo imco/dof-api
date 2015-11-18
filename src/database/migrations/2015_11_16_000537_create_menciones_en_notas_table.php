@@ -16,8 +16,8 @@ class CreateMencionesEnNotasTable extends Migration
     {
         Schema::connection($this->connection)->create('menciones_en_notas', function (Blueprint $table) {
             $table->increments('id_mencion_en_nota');
-            $table->string('clave');
-            $table->string('clave_normalizada')->nullable();
+            $table->string('mencion');
+            //$table->string('clave_normalizada')->nullable();
             $table->integer('cod_nota');
             $table->string('ubicacion')->nullable();
             $table->string('etiqueta')->nullable();

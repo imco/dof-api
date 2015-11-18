@@ -36,6 +36,6 @@ class NormaVigente extends Model
 
 
     public function menciones(){
-    	return $this->hasMany('IMCO\CatalogoNOMsApi\MencionEnNota', 'clave', 'clave');
+    	return $this->hasMany('IMCO\CatalogoNOMsApi\MencionEnNota', 'clave_normalizada', 'clave');
     }
 }
