@@ -21,20 +21,8 @@ class MencionEnNotaSeeder extends Seeder
     public function run()
     {
 
-        $errorEnFecha = NormaVigente::conFechaPublicacionIncorrecta()->get();
-        foreach ($errorEnFecha AS $norma){
-            print_r("Buscando $norma->clave\t...\n");
-            $menciones = DofNota::bodyContains($norma->clave_patron());
 
-            print_r($menciones->toSql() . "\n");
-
-            foreach($menciones->get() AS $mencion){
-                print_r("Match:\t$mencion->mencion\t$mencion->ubicacion\t$mencion->cod_nota\n");
-                MencionEnNota::create(array('cod_nota'=>$mencion->cod_nota, 'mencion'=> $mencion->mencion, 'ubicacion'=>$mencion->ubicacion));
-            }
-        }
-
-        $pattern = '((d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}|[^\<s></s>]*nmx)(([^\s])?[\w\d/]+)+(?=(,\s|\.\s|\s|<|\.?$$)))';
+        $pattern = '((d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}|[^\s>]*nmx)(([^\s])?[\w\d/]+)+(?=(,\s|\.\s|\s|<|\.?$$)))';
 
         $menciones = DofNota::bodyContains($pattern);
 
@@ -52,6 +40,18 @@ class MencionEnNotaSeeder extends Seeder
             }
         }
 
+        $errorEnFecha = NormaVigente::conFechaPublicacionIncorrecta()->get();
+        foreach ($errorEnFecha AS $norma){
+            print_r("Buscando $norma->clave\t...\n");
+            $menciones = DofNota::bodyContains($norma->clave_patron());
+
+            print_r($menciones->toSql() . "\n");
+
+            foreach($menciones->get() AS $mencion){
+                print_r("Match:\t$mencion->mencion\t$mencion->ubicacion\t$mencion->cod_nota\n");
+                MencionEnNota::create(array('cod_nota'=>$mencion->cod_nota, 'mencion'=> $mencion->mencion, 'ubicacion'=>$mencion->ubicacion));
+            }
+        }
 
 
 
