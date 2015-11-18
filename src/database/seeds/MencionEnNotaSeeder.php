@@ -68,10 +68,10 @@ class MencionEnNotaSeeder extends Seeder
 
         $file = fopen($requestedFile,"w");
 
-        fputcsv($file,['id_mencion_en_nota', 'clave', 'titulo']);
+        fputcsv($file,['id_mencion_en_nota', 'mencion', 'titulo']);
 
         foreach($menciones AS $mencion){
-            fputcsv($file,[$mencion->id_mencion_en_nota, $mencion->clave, $mencion->nota->titulo]);
+            fputcsv($file,[$mencion->id_mencion_en_nota, $mencion->mencion, $mencion->nota->titulo]);
         }
         fclose($file);
         
@@ -85,7 +85,7 @@ class MencionEnNotaSeeder extends Seeder
                 if (strlen($line)>1){
                     $classification = str_getcsv($line);
                     $mencion = MencionEnNota::find($classification[0]);
-                    $mencion->clave_normalizada =$classification[4];
+                    //$mencion->clave_normalizada =$classification[4];
                     $mencion->etiqueta = $classification[6];
 
                     $mencion->save();
