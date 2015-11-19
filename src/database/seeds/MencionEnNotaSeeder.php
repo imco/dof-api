@@ -40,6 +40,7 @@ class MencionEnNotaSeeder extends Seeder
             }
         }
 
+/*
         $errorEnFecha = NormaVigente::conFechaPublicacionIncorrecta()->get();
         foreach ($errorEnFecha AS $norma){
             print_r("Buscando $norma->clave\t...\n");
@@ -53,7 +54,7 @@ class MencionEnNotaSeeder extends Seeder
             }
         }
 
-
+*/
 
         $menciones = MencionEnNota::with(['nota'=>function($query){
             $query->select('cod_nota', 'cod_diario', 'titulo');
