@@ -127,7 +127,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 	Route::group(array('prefix' => 'download'), function () {
 		Route::get('/menciones-nmx', 'DatasetController@getMencionesCSV');
-
+		Route::get('/publicacion-nmx', 'DatasetController@getPublicacionCSV');
 		Route::get('/no-localizadas', function(){
 		    return view('catalogonoms::no-localizadas');
 		});
@@ -140,6 +140,9 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 		});
 		Route::get('/proyectos', function(){
 		    return view('catalogonoms::resultados-proyectos');
+		});
+		Route::get('/publicacion', function(){
+		    return view('catalogonoms::resultados-publicacion');
 		});
 
 	});

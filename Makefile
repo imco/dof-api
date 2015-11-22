@@ -2,20 +2,20 @@ SHELL := /bin/bash
 #FUENTE := nmx-en-dof.csv
 FUENTE := catalogonoms_dof_notas.csv
 TITULARESNMXCLASIFICADOS := titulares-nmx-clasificados.csv
-MATCHREGEX := "((d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}|nmx)(([^\s])?[\w\d/]+)+\)?(?=(,\s|\.\s|\s|\.?$$)))"
-DEBUGFILE := "nmx-no-localizadas.csv"
-
-TRAININGDATA := public/nmx-knowledgeBase.csv
-INPUT := /tmp/menciones-para-clasificar.csv
 
 TESTSTRING := "NORMA Oficial de Calidad para Manta de Mostrador, D. G .N. A-1-1965. (Esta Norma cancela la DGN A-1-1958)"
+MATCHREGEX := "((d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}|nmx)(([^\s])?[\w\d/]+)+\)?(?=(,\s|\.\s|\s|\.?$$)))"
+TRAININGDATA := public/nmx-knowledgeBase.csv
+INPUT := /tmp/menciones-para-clasificar.csv
+DEBUGFILE := "nmx-no-localizadas.csv"
+
 
 all: currentTask
 
 currentTask:
 	@clear
-	@./bin/clasificador.py --match=2,3 -t ${TRAININGDATA} -f ${INPUT}
-#	@./bin/clasificador.py --match ${MATCHREGEX} -t ${TRAININGDATA} ${TESTSTRING}  #| csvtool col 2,3 -
+#	@./bin/clasificador.py --match=2,3 -t ${TRAININGDATA} -f ${INPUT}
+	@./bin/clasificador.py --match ${MATCHREGEX} -t ${TRAININGDATA} ${TESTSTRING}  #| csvtool col 2,3 -
 #	csvquery titulares-nmx-clasificados.csv nmx-activas.csv -q 'SELECT clave FROM csv2 EXCEPT SELECT clave_nmx from csv;' > nmx-no-localizadas.csv
 #
 # VERY IMPORTANT !!! 

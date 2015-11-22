@@ -1,9 +1,11 @@
 #!/bin/bash
 # 111280
+# 111180
+
 CONNECTION="catalogonomsv2"
 TOTAL=`psql ${CONNECTION} -c "\COPY (select count(*) from (SELECT cod_nota FROM catalogonoms_dof_notas EXCEPT SELECT cod_nota FROM catalogonoms_dof_notas_plano) t1) TO STDOUT;"`
-TOTAL=100
-PARTITIONS=100
+TOTAL=20
+PARTITIONS=20
 BLOCKSIZE=`expr $TOTAL / $PARTITIONS + 1`
 LOGDIR=`pwd`
 OUTLOG="batch-processing2.log"

@@ -7,7 +7,7 @@ use DOMDocument;
 class NormaVigente extends Model
 {
     protected $connection = 'catalogoNoms';
-    protected $primaryKey = 'id_norma';
+    protected $primaryKey = 'clave';
     protected $table = 'normas_vigentes';
     protected $fillable = ["clave","secretaria","titulo","archivo","fecha_publicacion","tipo","producto","rama_economica","ctnn","onn"];
 
@@ -34,8 +34,17 @@ class NormaVigente extends Model
     	return "($result)";
     }
 
-
+/*
     public function menciones(){
     	return $this->hasMany('IMCO\CatalogoNOMsApi\MencionEnNota', 'mencion', 'clave');
     }
+*/
+    public function menciones(){
+        return $this->hasManyThrough('IMCO\CatalogoNOMsApi\MencionEnNota', 'IMCO\CatalogoNOMsApi\NormasMenciones', 'clave', 'mencion');
+    }
+/*
+    public function primeraMencion(){
+        return $this->hasManyThrough('IMCO\CatalogoNOMsApi\MencionEnNota', 'IMCO\CatalogoNOMsApi\NormasMenciones', 'clave', 'mencion')->where;
+    }
+    */
 }
