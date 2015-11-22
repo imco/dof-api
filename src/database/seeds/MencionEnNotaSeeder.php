@@ -22,7 +22,7 @@ class MencionEnNotaSeeder extends Seeder
     {
 
 
-        $pattern = '((d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}|[^\s>]*(nmx)))(([^\s])?[\w\d/]+)+(?=(,\s|\.\s|\s|<|\.?$$)))';
+        $pattern = '((d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}|[^\s>]*(nmx))(([^\s])?[\w\d/]+)+(?=(,\s|\.\s|\s|<|\.?$$)))';
 //        $pattern = '((d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}|[^\s>]*(nmx|nom(?!\w|\d|&\wacute;)))(([^\s])?[\w\d/]+)+(?=(,\s|\.\s|\s|<|\.?$$)))';
 
         $menciones = DofNota::bodyContains($pattern);
