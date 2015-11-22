@@ -21,7 +21,7 @@ Se han descargado <?php echo App::make('IMCO\CatalogoNOMsApi\NormaVigente')->cou
 
 <?php echo MencionEnNota::count();?>
 
-<?php echo MencionEnNota::select('clave')->distinct('clave')->count('clave');?>
+<?php echo MencionEnNota::select('mencion')->distinct('mencion')->count('mencion');?>
 
 
 <p>Resultados:</p>
