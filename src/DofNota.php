@@ -30,7 +30,7 @@ class DofNota extends Model
     }
 
 
-   ) public function updateTitulo(){
+   public function updateTitulo(){
     	$decretoFull = NULL;
     	$tries = 5;
     	while (strlen($decretoFull)<=1 && $tries>0){
