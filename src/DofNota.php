@@ -18,7 +18,7 @@ class DofNota extends Model
     }
 
     public function scopeContains($query, $clave){
-    	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(contenido, '".$clave."', 'gi'))[1] as mencion"));
+    	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(titulo || ' '|| contenido, '".$clave."', 'gi'))[1] as mencion"));
     }
 
     public function scopeBodyContains($query, $clave){
