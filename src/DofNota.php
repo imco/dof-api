@@ -18,7 +18,7 @@ class DofNota extends Model
     }
 
     public function scopeContains($query, $clave){
-    	return $query->select(DB::raw("cod_nota, CASE WHEN entity2char(titulo)  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (entity2char(regexp_matches(titulo || ' '|| contenido, '".$clave."', 'gi'))[1]) as mencion"));
+    	return $query->select(DB::raw("cod_nota, CASE WHEN entity2char(titulo)  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, entity2char((regexp_matches(titulo || ' '|| contenido, '".$clave."', 'gi'))[1]) as mencion"));
     }
 
     public function scopeBodyContains($query, $clave){
@@ -30,7 +30,7 @@ class DofNota extends Model
     }
 
 
-   public function updateTitulo(){
+    public function updateTitulo(){
     	$decretoFull = NULL;
     	$tries = 5;
     	while (strlen($decretoFull)<=1 && $tries>0){
