@@ -7,7 +7,7 @@ use DOMDocument;
 class NormasMenciones extends Model
 {
     protected $connection = 'catalogoNoms';
-    protected $primaryKey = 'clave';
+    protected $primaryKey = 'mencion';
     protected $table = 'view_normas_menciones';
     //protected $fillable = ["mencion","cod_nota", "ubicacion"];
     
