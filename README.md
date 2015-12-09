@@ -25,7 +25,7 @@ y dentro del método `schedule`:
 
     $schedule->call(function () {
         DOFClientController::getYesterdayDof();
-    })->twiceDaily(1, 22);
+    })->twiceDaily(1, 22)->name('downloadDOF');
 
 Agregar la siguiente entrada en Cron
 `* * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1`
