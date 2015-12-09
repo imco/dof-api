@@ -183,7 +183,7 @@ class DOFClientController extends Controller {
             $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
             $diario = DofDiario::firstOrCreate((array)$diario);
             if($diario->availablePdf == null){
-            	$diario->updateAvailablePdf();	
+            	$diario->availablePdf = $diario->getAvailablePdf();	
             }
         }
 
