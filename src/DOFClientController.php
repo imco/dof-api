@@ -183,9 +183,43 @@ class DOFClientController extends Controller {
             $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
             $diario = DofDiario::firstOrCreate((array)$diario);
             if($diario->availablePdf == null){
-            	$diario->availablePdf = $diario->getAvailablePdf();	
+            	print_r("No PDF Available");
+            	$diario->availablePdf = $diario->getAvailablePdf();
+            	$diario->save();
             }
         }
+
+        $result = [];
+		$newNotes = array();
+		$date = DateTime::createFromFormat('Y-m-d', $diario->fecha);
+		$sumarios = $diario->getSummary();
+		$result = array_merge($result, $sumarios);
+        foreach($sumarios AS $sumario){
+            array_push($newNotes, array_merge((array)$sumario, array('created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s'))));
+        }
+
+        /* Verifica si una nota sin titulo está duplicada y el duplicado contiene el título */
+        foreach($newNotes AS $key =>$note){
+        	if ($note['titulo'] == null){
+        		foreach($newNotes AS $existingNote){
+        			if ($existingNote['titulo'] != null && $note['seccion'] == $existingNote['seccion'] && $note['pagina']== $existingNote['pagina']){
+        				unset($newNotes[$key]);
+        				break;
+        			}
+        		}
+        	}
+        }
+        if (count($newNotes) > 0 ){
+	        $newNotes = array_values($newNotes);
+	        DofNota::insert($newNotes);
+	        $diario->invalid=false;
+	        $diario->save();
+	    }elseif ($diario->availablePdf == null){
+	    	$diario->invalid=true;
+	        $diario->save();
+	    }
+
+
 
         return $diario;
 	}
