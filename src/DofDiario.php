@@ -102,7 +102,7 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 
 								$tries--;
 							}
-							$contenidoPlano = trim(preg_replace('/(<style.*?<\/style>)|(<script.*?<\/script>)|(<[^>]+>)/i', '', $decretoFull));
+							$contenidoPlano = trim(html_entity_decode (preg_replace('/(<style.*?<\/style>)|(<script.*?<\/script>)|(<[^>]+>)/i', '', $decretoFull)));
 							array_push($result, array('cod_diario' => $diario->cod_diario, 'cod_nota'=>$contentDecreto->cod_nota, 'titulo'=> $contentDecreto->tituloDecreto,'contenido' =>$decretoFull, 'contenido_plano'=>$contenidoPlano,'pagina'=>$contentDecreto->pagina, 'secretaria'=>$contentSecretaria->nombreSecretaria, 'organismo' =>$organismo->nomOrganismo, 'seccion'=>$seccion->numSeccion));
 						}
 					}
