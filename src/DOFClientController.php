@@ -64,11 +64,13 @@ class DOFClientController extends Controller {
 			$diario->save();
 		}
 
+		$result = [];
 		foreach($diarios AS $diario){
 			$newNotes = array();
 			$date = DateTime::createFromFormat('Y-m-d', $diario->fecha);
-
-	        foreach($diario->getSummary() AS $sumario){
+			$sumarios = $diario->getSummary();
+			$result = array_merge($result, $sumarios);
+	        foreach($sumarios AS $sumario){
 	            array_push($newNotes, array_merge((array)$sumario, array('created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s'))));
 	        }
 
@@ -93,6 +95,8 @@ class DOFClientController extends Controller {
 		        $diario->save();
 		    }
 		}
+
+		return $result;
 	}
 
 	public static function http_get($url){
@@ -157,6 +161,23 @@ class DOFClientController extends Controller {
 		$dofClient = new DOFClientController;
 
         $dofDiario = $dofClient->getEditionsOnDate(date("Y"), date("m"), date("d"))->getData();
+
+        foreach($dofDiario->list as $diario){
+            $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
+            $diario = DofDiario::firstOrCreate((array)$diario);
+            if($diario->availablePdf == null){
+            	$diario->updateAvailablePdf();	
+            }
+        }
+
+        return $diario;
+	}
+
+	public static function getYesterdayDof(){
+
+		$dofClient = new DOFClientController;
+
+        $dofDiario = $dofClient->getEditionsOnDate(date("Y", strtotime('-1 day')), date("m", strtotime('-1 day')), date("d", strtotime('-1 day')))->getData();
 
         foreach($dofDiario->list as $diario){
             $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
