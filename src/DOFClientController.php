@@ -173,11 +173,11 @@ class DOFClientController extends Controller {
         return $diario;
 	}
 
-	public static function getYesterdayDof(){
+	public static function getDofOnDate($fecha = null){
 
 		$dofClient = new DOFClientController;
 
-        $dofDiario = $dofClient->getEditionsOnDate(date("Y", strtotime('-1 day')), date("m", strtotime('-1 day')), date("d", strtotime('-1 day')))->getData();
+        $dofDiario = $dofClient->getEditionsOnDate(date("Y", $fecha ?:strtotime('-1 day')), date("m", $fecha ?:strtotime('-1 day')), date("d", $fecha ?:strtotime('-1 day')))->getData();
 
         foreach($dofDiario->list as $diario){
             $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
@@ -185,43 +185,43 @@ class DOFClientController extends Controller {
             if($diario->availablePdf == null){
             	print_r("No PDF Available");
             	$diario->availablePdf = $diario->getAvailablePdf();
-            	$diario->save();
+            	//$diario->save();
             }
+
+            //$result = [];
+			$newNotes = array();
+			$date = DateTime::createFromFormat('Y-m-d', $diario->fecha);
+			$sumarios = $diario->getSummary();
+			//$result = array_merge($result, $sumarios);
+	        foreach($sumarios AS $sumario){
+	            array_push($newNotes, array_merge((array)$sumario, array('created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s'))));
+	        }
+
+	        /* Verifica si una nota sin titulo está duplicada y el duplicado contiene el título */
+	        foreach($newNotes AS $key =>$note){
+	        	if ($note['titulo'] == null){
+	        		foreach($newNotes AS $existingNote){
+	        			if ($existingNote['titulo'] != null && $note['seccion'] == $existingNote['seccion'] && $note['pagina']== $existingNote['pagina']){
+	        				unset($newNotes[$key]);
+	        				break;
+	        			}
+	        		}
+	        	}
+	        }
+	        
+	        if (count($newNotes) > 0 ){
+		        $newNotes = array_values($newNotes);
+		        DofNota::insert($newNotes);
+		        $diario->invalid=false;
+		    }elseif ($diario->availablePdf == null){
+		    	$diario->invalid=true;
+		    }
+		    $diario->save();
+
         }
 
-        $result = [];
-		$newNotes = array();
-		$date = DateTime::createFromFormat('Y-m-d', $diario->fecha);
-		$sumarios = $diario->getSummary();
-		$result = array_merge($result, $sumarios);
-        foreach($sumarios AS $sumario){
-            array_push($newNotes, array_merge((array)$sumario, array('created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s'))));
-        }
 
-        /* Verifica si una nota sin titulo está duplicada y el duplicado contiene el título */
-        foreach($newNotes AS $key =>$note){
-        	if ($note['titulo'] == null){
-        		foreach($newNotes AS $existingNote){
-        			if ($existingNote['titulo'] != null && $note['seccion'] == $existingNote['seccion'] && $note['pagina']== $existingNote['pagina']){
-        				unset($newNotes[$key]);
-        				break;
-        			}
-        		}
-        	}
-        }
-        if (count($newNotes) > 0 ){
-	        $newNotes = array_values($newNotes);
-	        DofNota::insert($newNotes);
-	        $diario->invalid=false;
-	        $diario->save();
-	    }elseif ($diario->availablePdf == null){
-	    	$diario->invalid=true;
-	        $diario->save();
-	    }
-
-
-
-        return $diario;
+        return $dofDiario;
 	}
 
 	function getEditionsOnDate($year,$month=0, $day = 0){

@@ -29,6 +29,10 @@ class DofNota extends Model
     	return $query->select(DB::raw("cod_nota, CASE WHEN titulo  ~* '".$clave. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, (regexp_matches(titulo, '".$clave."', 'ig'))[1] as mencion"));
     }
 
+    public function findClaves(){
+    	return null;
+    }
+
 
     public function updateTitulo(){
     	$decretoFull = NULL;
