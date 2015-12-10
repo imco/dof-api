@@ -190,8 +190,8 @@ class DOFClientController extends Controller {
 
             var_dump($diario->cod_diario);
             var_dump(DofNota::where('cod_diario', $diario->cod_diario)->count());
-            
-            if (!DofNota::where('cod_diario', $diario->cod_diario)->first()){
+
+            if (DofNota::where('cod_diario', $diario->cod_diario)->count()==0){
 	            //$result = [];
 				$newNotes = array();
 				$date = DateTime::createFromFormat('Y-m-d', $diario->fecha);
@@ -203,7 +203,7 @@ class DOFClientController extends Controller {
 
 		        /* Verifica si una nota sin titulo está duplicada y el duplicado contiene el título */
 		        foreach($newNotes AS $key =>$note){
-		        	print_r($existingNote['titulo']. "\n");
+		        	print_r($note['titulo']. "\n");
 		        	if ($note['titulo'] == null){
 		        		foreach($newNotes AS $existingNote){
 		        			if ($existingNote['titulo'] != null && $note['seccion'] == $existingNote['seccion'] && $note['pagina']== $existingNote['pagina']){
