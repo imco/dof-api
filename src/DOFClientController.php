@@ -203,7 +203,6 @@ class DOFClientController extends Controller {
 
 		        /* Verifica si una nota sin titulo está duplicada y el duplicado contiene el título */
 		        foreach($newNotes AS $key =>$note){
-		        	print_r($note['titulo']. "\n");
 		        	if ($note['titulo'] == null){
 		        		foreach($newNotes AS $existingNote){
 		        			if ($existingNote['titulo'] != null && $note['seccion'] == $existingNote['seccion'] && $note['pagina']== $existingNote['pagina']){
@@ -212,6 +211,7 @@ class DOFClientController extends Controller {
 		        			}
 		        		}
 		        	}
+		        	print_r($note['titulo']. "\n");
 		        }
 
 		        if (count($newNotes) > 0 ){
