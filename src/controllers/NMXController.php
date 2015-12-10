@@ -68,8 +68,11 @@ class NMXController extends Controller {
 	 */
 
 	public function getCTNNList(){
-		$ctnn = NormaVigente::select('ctnn')->distinct()->get();
-		return \Response::json($ctnn);
+		$ctnns = NormaVigente::select('ctnn')->distinct()->get();
+		foreach($ctnns AS $key=>$value){
+			$ctnns[$key]->ctnn_slug = \Slug\Slugifier::slugify($value->ctnn);
+		}
+		return \Response::json($ctnns);
 		
 	}
 

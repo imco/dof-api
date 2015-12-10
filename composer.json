@@ -2,6 +2,12 @@
     "name": "imco/catalogonoms-api",
     "description": "Application Programing Interface para el Catalogo de Normas oficiales Mexicanas",
     "license": "GPL-3.0+",
+    "repositories":[
+        {
+            "type": "git",
+            "url" : "https://github.com/emirhg/slug.php"
+        }
+    ],
     "authors": [
         {
             "name": "Emir Herrera",
@@ -15,8 +21,12 @@
     "autoload": 
 	{
 		"psr-4": {
-			"IMCO\\CatalogoNOMsApi\\" : "src/"
+			"IMCO\\CatalogoNOMsApi\\" : "src/",
+            "Slug\\" : "src/vendor/kevinlebrun/slug.php/src/Slug/"
 		}
 	},
-    "require": {}
+    "require": {
+        "kevinlebrun/slug.php" : "master-dev",
+        "doctrine/dbal": "2.5.2"
+    }
 }
