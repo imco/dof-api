@@ -31,7 +31,7 @@ class DofDiario extends Model
     }
 
 	public function getSummary(){
-/** Crear resultado en JSON con el mejor output posible combinando
+/* Crear resultado en JSON con el mejor output posible combinando
 
 Conocer si hay archivo PDF disponible para una fecha específica:
 http://diariooficial.gob.mx/WS_getDiarioPDF.php?day=29&month=08&year=2012&edicion=MAT
@@ -44,7 +44,7 @@ http://diariooficial.gob.mx/WS_getDiarioFull.php?year=2013&month=07&day=31
 
 Nota completa
 http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
-**/
+*/
 
 		$result = array();
 		

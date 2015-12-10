@@ -7,8 +7,9 @@
 <?php
 
 	$norma = IMCO\CatalogoNOMsApi\NormaVigente::with(['menciones.nota'=>function ($query){
-			$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
-		}])->where('clave', $clave)->first();
+		$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
+	}])->where('clave', $clave)->first();
+	
 	print_r('<table>');
 	print_r('<tr>');
 	print_r("<td>Clave: </td>");

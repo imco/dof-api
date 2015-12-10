@@ -4,8 +4,8 @@
 <?php
 
 	$vigentes = NormaVigente::with(['menciones.nota'=>function ($query){
-			$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
-		}])->has('menciones')->orderBy('clave')->paginate(50);
+		$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
+	}])->has('menciones')->orderBy('clave')->paginate(50);
 
 	print_r('<html>
 		<head><title>Menciones de NMX en el DOF</title></head>

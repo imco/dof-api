@@ -23,7 +23,7 @@ class NMXController extends Controller {
 				$query->where('etiqueta', 'Vigencia')->with(['nota'=>function ($query){
 					$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
 				}]);
-			}])->orderBy('clave')->get();	
+			}])->orderBy('clave')->paginate(50);	
 		return \Response::json($vigentes);
 	}
 
@@ -48,10 +48,28 @@ class NMXController extends Controller {
 	 */
 
 	public function getNMXDetalle($clave){
+		$clave = strtoupper($clave);
 		$norma = NormaVigente::with(['menciones.nota'=>function ($query){
 			$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
 		}])->where('clave', $clave)->first();
 		return \Response::json($norma);
+		
+	}
+
+	/**
+	 *		@SWG\Path(
+	 *			path = "/catalogonoms/nmx/ctnn",
+	 *			@SWG\Get(
+	 *				summary = "Lista de CTNN",
+	 *				tags = {"CatalogoNMX"},
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
+
+	public function getCTNNList(){
+		$ctnn = NormaVigente::select('ctnn')->distinct()->get();
+		return \Response::json($ctnn);
 		
 	}
 
