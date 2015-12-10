@@ -30,7 +30,7 @@ class NMXController extends Controller {
 
 	/**
 	 *		@SWG\Path(
-	 *			path = "/catalogonoms/nmx/datelle/{clave}",
+	 *			path = "/catalogonoms/nmx/detalle/{clave}",
 	 *			@SWG\Get(
 	 *				summary = "Resumen de las normas vigentes",
 	 *				tags = {"CatalogoNMX"},
