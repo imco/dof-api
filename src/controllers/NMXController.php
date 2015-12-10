@@ -48,7 +48,7 @@ class NMXController extends Controller {
 	 */
 
 	public function getNMXDetalle($clave){
-		$norma = IMCO\CatalogoNOMsApi\NormaVigente::with(['menciones.nota'=>function ($query){
+		$norma = NormaVigente::with(['menciones.nota'=>function ($query){
 			$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
 		}])->where('clave', $clave)->first();
 		return \Response::json($norma);
