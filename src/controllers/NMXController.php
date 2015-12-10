@@ -28,36 +28,30 @@ class NMXController extends Controller {
 	}
 
 
-	public function getPublicacionCSV(){
-		//ini_set('memory_limit', '-1');
+	/**
+	 *		@SWG\Path(
+	 *			path = "/catalogonoms/nmx/datelle/{clave}",
+	 *			@SWG\Get(
+	 *				summary = "Resumen de las normas vigentes",
+	 *				tags = {"CatalogoNMX"},
+	 *				@SWG\Parameter(
+	 * 					name="clave",
+	 * 					in="path",
+	 * 					required=true,
+	 * 					type="string",
+	 *					default = "NMX-A-001-1965",
+	 * 					description="Clave de la Norma"
+	 *				),
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
 
-		$requestedFile = '/tmp/publicacion.csv';
-
-		//if (!file_exists($requestedFile)){
-			$vigentes = NormaVigente::with(['menciones'=>function ($query){
-				$query->with(['nota'=>function ($query){
-					$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
-				}]);
-			}])->has('menciones')->orderBy('clave')->get();
-
-			$file = fopen($requestedFile,"w");
-
-			fputcsv($file,['Clave', 'CTNN','ONN','Fecha de entrada en vigor','Primera publicacion','Diferencia','Título primera publicacion']);
-			//var_dump($vigentes);
-			foreach($vigentes as $norma){
-				$menciones =$norma->menciones->sortBy(function($mencion, $key){
-					return DateTime::createFromFormat ( 'Y-m-d' , $mencion->nota->diario->fecha);
-				});
-				foreach($menciones AS $mencion){
-					fputcsv($file,[$norma->clave, $norma->ctnn, $norma->onn, $norma->fecha_publicacion,$mencion->nota->diario->fecha, date_diff(DateTime::createFromFormat ( 'Y-m-d' , $mencion->nota->diario->fecha),DateTime::createFromFormat ( 'Y-m-d' , $norma->fecha_publicacion))->format("%R%a"), $mencion->nota->titulo]);
-					break;
-				}
-			}
-
-			fclose($file);
-		//}
-
-		return \Response::download($requestedFile);
+	public function getNMXDetalle($clave){
+		$norma = IMCO\CatalogoNOMsApi\NormaVigente::with(['menciones.nota'=>function ($query){
+			$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
+		}])->where('clave', $clave)->first();
+		return \Response::json($norma);
 		
 	}
 
