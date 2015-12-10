@@ -7,7 +7,7 @@ use DateTime;
 class NMXController extends Controller {
 	protected $connection = 'catalogoNoms';
 	
-	/*
+	/**
 	 *		@SWG\Path(
 	 *			path = "/catalogonoms/nmx/vigentes",
 	 *			@SWG\Get(
