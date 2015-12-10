@@ -18,13 +18,37 @@ class NMXController extends Controller {
 	 *		)
 	 */
 
-	public function getNMXVigentes(){
+
+	/**
+	 *		@SWG\Path(
+	 *			path = "/catalogonoms/nmx/vigentes/byctnn/{ctnn}",
+	 *			@SWG\Get(
+	 *				summary = "NMX vigentes por CTNN",
+	 *				tags = {"CatalogoNMX"},
+	 *				@SWG\Parameter(
+	 * 					name="ctnn",
+	 * 					in="path",
+	 * 					required=true,
+	 * 					type="string",
+	 *					default = "no-aplica",
+	 * 					description="Slug de la CTNN"
+	 *				),
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
+
+	public function getNMXVigentes($ctnn_slug=null){
 		$vigentes = NormaVigente::with(['menciones'=>function ($query){
 				$query->where('etiqueta', 'Vigencia')->with(['nota'=>function ($query){
 					$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
 				}]);
-			}])->orderBy('clave')->paginate(50);	
-		return \Response::json($vigentes);
+			}])->orderBy('clave');
+
+		if ($ctnn_slug != null){
+			$vigentes->where('ctnn_slug', $ctnn_slug);
+		}
+		return \Response::json($vigentes->get());
 	}
 
 
@@ -71,6 +95,7 @@ class NMXController extends Controller {
 		$ctnns = NormaVigente::select('ctnn')->distinct()->get();
 		foreach($ctnns AS $key=>$value){
 			$ctnns[$key]->ctnn_slug = \Slug\Slugifier::slugify($value->ctnn);
+			//$ctnns[$key]->save();
 		}
 		return \Response::json($ctnns);
 		
