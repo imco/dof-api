@@ -183,7 +183,7 @@ class DOFClientController extends Controller {
             $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
             $diario = DofDiario::firstOrCreate((array)$diario);
             if($diario->availablePdf == null){
-            	print_r("No PDF Available");
+            	//print_r("No PDF Available");
             	$diario->availablePdf = $diario->getAvailablePdf();
             	//$diario->save();
             }
@@ -200,6 +200,7 @@ class DOFClientController extends Controller {
 
 		        /* Verifica si una nota sin titulo está duplicada y el duplicado contiene el título */
 		        foreach($newNotes AS $key =>$note){
+		        	print_r($existingNote['titulo']. "\n");
 		        	if ($note['titulo'] == null){
 		        		foreach($newNotes AS $existingNote){
 		        			if ($existingNote['titulo'] != null && $note['seccion'] == $existingNote['seccion'] && $note['pagina']== $existingNote['pagina']){
