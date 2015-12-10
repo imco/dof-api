@@ -125,6 +125,11 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 	});
 
+
+	Route::group(array('prefix' => 'nmx'), function () {
+		Route::get('/vigentes', 'NMXController@getNMXVigentes');
+	});
+
 	Route::group(array('prefix' => 'download'), function () {
 		Route::get('/menciones-nmx', 'DatasetController@getMencionesCSV');
 		Route::get('/publicacion-nmx', 'DatasetController@getPublicacionCSV');

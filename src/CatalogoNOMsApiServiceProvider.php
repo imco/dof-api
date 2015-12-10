@@ -41,6 +41,7 @@ class CatalogoNOMsApiServiceProvider extends ServiceProvider {
 	{
 		require __DIR__.'/routes.php';
 		require __DIR__.'/controllers/DatasetController.php';
+		require __DIR__.'/controllers/NMXController.php';
 		$this->app->make('IMCO\CatalogoNOMsApi\DatasetController');
 		$this->app->make('IMCO\CatalogoNOMsApi\CatalogoNOMsController');
 		$this->app->make('IMCO\CatalogoNOMsApi\DOFClientController');

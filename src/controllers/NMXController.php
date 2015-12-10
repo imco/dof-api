@@ -4,36 +4,27 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use DateTime;
 
-class DatasetController extends Controller {
+class NMXController extends Controller {
 	protected $connection = 'catalogoNoms';
 	
-	public function getMencionesCSV(){
-		//ini_set('memory_limit', '-1');
+	/*
+	 *		@SWG\Path(
+	 *			path = "/catalogonoms/nmx/vigentes",
+	 *			@SWG\Get(
+	 *				summary = "Resumen de las normas vigentes",
+	 *				tags = {"CatalogoNMX"},
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
 
-		$requestedFile = '/tmp/mencionesNmx.csv';
-
-		//if (!file_exists($requestedFile)){
-			$vigentes = NormaVigente::with(['menciones.nota'=>function ($query){
-				$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
-			}])->has('menciones')->orderBy('clave')->get();
-		
-			$file = fopen($requestedFile,"w");
-
-			fputcsv($file,['clave', 'etiqueta', 'fecha', 'cod_nota', 'titulo']);
-			foreach($vigentes as $norma){
-				$menciones =$norma->menciones->sortBy(function($mencion, $key){
-					return DateTime::createFromFormat ( 'Y-m-d' , $mencion->nota->diario->fecha);
-				});
-				foreach($menciones AS $mencion){
-					fputcsv($file,[$norma->clave, $mencion->etiqueta, $mencion->nota->diario->fecha, $mencion->cod_nota, $mencion->nota->titulo]);
-				}
-			}
-
-			fclose($file);
-		//}
-
-		return \Response::download($requestedFile);
-		
+	public function getNMXVigentes(){
+		$vigentes = NormaVigente::with(['menciones'=>function ($query){
+				$query->where('etiqueta', 'Vigencia')->with(['nota'=>function ($query){
+					$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
+				}]);
+			}])->orderBy('clave')->get();	
+		return \Response::json($vigentes);
 	}
 
 
