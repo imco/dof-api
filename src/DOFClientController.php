@@ -189,6 +189,8 @@ class DOFClientController extends Controller {
             }
 
             var_dump($diario->cod_diario);
+            var_dump(DofNota::where('cod_diario', $diario->cod_diario)->count());
+            
             if (!DofNota::where('cod_diario', $diario->cod_diario)->first()){
 	            //$result = [];
 				$newNotes = array();
