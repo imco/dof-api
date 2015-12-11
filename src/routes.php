@@ -128,9 +128,10 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 	Route::group(array('prefix' => 'nmx'), function () {
 		Route::get('/vigentes', 'NMXController@getNMXVigentes');
-		Route::get('/vigentes/byctnn/{ctnn}', 'NMXController@getNMXVigentes');
+		Route::get('/vigentes/{filter}/{value}', 'NMXController@getNMXVigentes');
 		Route::get('/detalle/{clave}', 'NMXController@getNMXDetalle');
 		Route::get('/ctnn', 'NMXController@getCTNNList');
+		Route::get('/keywords', 'NMXController@getKeywords');
 	});
 
 	Route::group(array('prefix' => 'download'), function () {

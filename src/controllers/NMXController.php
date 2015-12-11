@@ -3,6 +3,7 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use DateTime;
+use DB; 
 
 class NMXController extends Controller {
 	protected $connection = 'catalogoNoms';
@@ -38,15 +39,42 @@ class NMXController extends Controller {
 	 *		)
 	 */
 
-	public function getNMXVigentes($ctnn_slug=null){
+	/**
+	 *		@SWG\Path(
+	 *			path = "/catalogonoms/nmx/vigentes/bykeyword/{keyword}",
+	 *			@SWG\Get(
+	 *				summary = "NMX vigentes por palabra clave",
+	 *				tags = {"CatalogoNMX"},
+	 *				@SWG\Parameter(
+	 * 					name="keyword",
+	 * 					in="path",
+	 * 					required=true,
+	 * 					type="string",
+	 *					default = "abrasion",
+	 * 					description="Keyword"
+	 *				),
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
+
+	public function getNMXVigentes($filterType = null, $value=null){
 		$vigentes = NormaVigente::with(['menciones'=>function ($query){
 				$query->where('etiqueta', 'Vigencia')->with(['nota'=>function ($query){
 					$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
 				}]);
 			}])->orderBy('clave');
 
-		if ($ctnn_slug != null){
-			$vigentes->where('ctnn_slug', $ctnn_slug);
+		if ($filterType){
+			switch($filterType){
+				case 'byctnn':
+					$vigentes->where('ctnn_slug', $value);
+					break;
+				case 'bykeyword':
+					$vigentes->whereRaw("palabras_clave @> '{". strtoupper($value) ."}'");
+					break;
+			}
+
 		}
 		return \Response::json($vigentes->get());
 	}
@@ -92,13 +120,28 @@ class NMXController extends Controller {
 	 */
 
 	public function getCTNNList(){
-		$ctnns = NormaVigente::select('ctnn')->distinct()->get();
-		foreach($ctnns AS $key=>$value){
-			$ctnns[$key]->ctnn_slug = \Slug\Slugifier::slugify($value->ctnn);
+		$ctnns = NormaVigente::select('ctnn', 'ctnn_slug')->distinct()->get();
+		//foreach($ctnns AS $key=>$value){
+		//	$ctnns[$key]->ctnn_slug = \Slug\Slugifier::slugify($value->ctnn);
 			//$ctnns[$key]->save();
-		}
+		//}
 		return \Response::json($ctnns);
 		
+	}
+
+	/**
+	 *		@SWG\Path(
+	 *			path = "/catalogonoms/nmx/keywords",
+	 *			@SWG\Get(
+	 *				summary = "Lista de palabras clave",
+	 *				tags = {"CatalogoNMX"},
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
+	public function getKeywords(){
+		$keywords = NormaVigente::select(DB::raw('unnest(palabras_clave) AS keyword'))->distinct()->orderBy('keyword')->get();
+		return \Response::json($keywords);
 	}
 
 }
