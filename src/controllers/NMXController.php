@@ -32,7 +32,7 @@ class NMXController extends Controller {
 	 * 					required=true,
 	 * 					type="string",
 	 *					default = "no-aplica",
-	 *					enum = {"byctnn", "byonn", "bykeyword"}
+	 *					enum = {"byctnn", "byonn", "bykeyword"},
 	 * 					description="Tipo de filtro a utilizar"
 	 *				),
 	 *				@SWG\Parameter(
