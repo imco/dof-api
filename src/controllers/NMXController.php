@@ -22,42 +22,31 @@ class NMXController extends Controller {
 
 	/**
 	 *		@SWG\Path(
-	 *			path = "/catalogonoms/nmx/vigentes/byctnn/{ctnn}",
+	 *			path = "/catalogonoms/nmx/vigentes/{filter}/{value}",
 	 *			@SWG\Get(
 	 *				summary = "NMX vigentes por CTNN",
 	 *				tags = {"CatalogoNMX"},
 	 *				@SWG\Parameter(
-	 * 					name="ctnn",
+	 * 					name="filter",
 	 * 					in="path",
 	 * 					required=true,
 	 * 					type="string",
 	 *					default = "no-aplica",
-	 * 					description="Slug de la CTNN"
+	 *					enum = {"byctnn", "byonn", "bykeyword"}
+	 * 					description="Tipo de filtro a utilizar"
 	 *				),
-	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
-	 * 			)
-	 *		)
-	 */
-
-	/**
-	 *		@SWG\Path(
-	 *			path = "/catalogonoms/nmx/vigentes/bykeyword/{keyword}",
-	 *			@SWG\Get(
-	 *				summary = "NMX vigentes por palabra clave",
-	 *				tags = {"CatalogoNMX"},
 	 *				@SWG\Parameter(
-	 * 					name="keyword",
+	 * 					name="value",
 	 * 					in="path",
 	 * 					required=true,
 	 * 					type="string",
-	 *					default = "abrasion",
-	 * 					description="Keyword"
+	 *					default = "no-aplica",
+	 * 					description="Valor del Slug por el que se ha de filtrar"
 	 *				),
 	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
 	 * 			)
 	 *		)
 	 */
-
 	public function getNMXVigentes($filterType = null, $value=null){
 		$vigentes = NormaVigente::with(['menciones'=>function ($query){
 				$query->where('etiqueta', 'Vigencia')->with(['nota'=>function ($query){
@@ -69,6 +58,9 @@ class NMXController extends Controller {
 			switch($filterType){
 				case 'byctnn':
 					$vigentes->where('ctnn_slug', $value);
+					break;
+				case 'byonn':
+					$vigentes->where('onn_slug', $value);
 					break;
 				case 'bykeyword':
 					$vigentes->whereRaw("palabras_clave @> '{". strtoupper($value) ."}'");
@@ -129,6 +121,27 @@ class NMXController extends Controller {
 		
 	}
 
+
+	/**
+	 *		@SWG\Path(
+	 *			path = "/catalogonoms/nmx/onn",
+	 *			@SWG\Get(
+	 *				summary = "Lista de ONN",
+	 *				tags = {"CatalogoNMX"},
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
+
+	public function getONNList(){
+		$onns = NormaVigente::select('onn', 'onn_slug')->whereNotNull('onn')->distinct()->get();
+		/*foreach($onns AS $key=>$value){
+			$onns[$key]->onn_slug = \Slug\Slugifier::slugify($value->onn);
+			$onns[$key]->save();
+		}*/
+		return \Response::json($onns);
+		
+	}
 	/**
 	 *		@SWG\Path(
 	 *			path = "/catalogonoms/nmx/keywords",

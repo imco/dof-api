@@ -131,6 +131,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 		Route::get('/vigentes/{filter}/{value}', 'NMXController@getNMXVigentes');
 		Route::get('/detalle/{clave}', 'NMXController@getNMXDetalle');
 		Route::get('/ctnn', 'NMXController@getCTNNList');
+		Route::get('/onn', 'NMXController@getONNList');
 		Route::get('/keywords', 'NMXController@getKeywords');
 	});
 
