@@ -32,7 +32,7 @@ class NMXController extends Controller {
 	 * 					required=true,
 	 * 					type="string",
 	 *					default = "no-aplica",
-	 *					enum = {"byctnn", "byonn", "bykeyword"},
+	 *					enum = {"byctnn", "byonn", "bykeyword", "byramaeconomica"},
 	 * 					description="Tipo de filtro a utilizar"
 	 *				),
 	 *				@SWG\Parameter(
@@ -58,6 +58,9 @@ class NMXController extends Controller {
 			switch($filterType){
 				case 'byctnn':
 					$vigentes->where('ctnn_slug', $value);
+					break;
+				case 'byramaeconomica':
+					$vigentes->where('rama_economica_slug', $value);
 					break;
 				case 'byonn':
 					$vigentes->where('onn_slug', $value);
@@ -134,7 +137,7 @@ class NMXController extends Controller {
 	 */
 
 	public function getONNList(){
-		$onns = NormaVigente::select('onn', 'onn_slug')->whereNotNull('onn')->distinct()->get();
+		$onns = NormaVigente::select('onn', 'onn_slug')->whereNotNull('onn')->distinct()->orderBy('onn')->get();
 		/*foreach($onns AS $key=>$value){
 			$onns[$key]->onn_slug = \Slug\Slugifier::slugify($value->onn);
 			$onns[$key]->save();
@@ -155,6 +158,25 @@ class NMXController extends Controller {
 	public function getKeywords(){
 		$keywords = NormaVigente::select(DB::raw('unnest(palabras_clave) AS keyword'))->distinct()->orderBy('keyword')->get();
 		return \Response::json($keywords);
+	}
+
+	/**
+	 *		@SWG\Path(
+	 *			path = "/catalogonoms/nmx/ramas",
+	 *			@SWG\Get(
+	 *				summary = "Lista de ramas económicas",
+	 *				tags = {"CatalogoNMX"},
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
+	public function getRamasEconomicas(){
+		$ramas = NormaVigente::select('rama_economica', 'rama_economica_slug')->whereNotNull('rama_economica')->distinct()->get();
+		/*foreach($ramas AS $key=>$value){
+			$ramas[$key]->rama_economica_slug = \Slug\Slugifier::slugify($value->rama_economica);
+			$ramas[$key]->save();
+		}*/
+		return \Response::json($ramas);
 	}
 
 }

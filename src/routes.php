@@ -133,6 +133,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 		Route::get('/ctnn', 'NMXController@getCTNNList');
 		Route::get('/onn', 'NMXController@getONNList');
 		Route::get('/keywords', 'NMXController@getKeywords');
+		Route::get('/ramas', 'NMXController@getRamasEconomicas');
 	});
 
 	Route::group(array('prefix' => 'download'), function () {
