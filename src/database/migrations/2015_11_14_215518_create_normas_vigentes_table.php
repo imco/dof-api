@@ -26,6 +26,11 @@ class CreateNormasVigentesTable extends Migration
             $table->string('rama_economica');
             $table->string('ctnn');
             $table->string('onn');
+
+            $table->string('rama_economica_slug');
+            $table->string('ctnn_slug');
+            $table->string('onn_slug');
+
             $table->timestamps();
 
             //$table->index()

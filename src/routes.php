@@ -159,6 +159,13 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 	});
 
 	Route::get('test', function(){
+
+
+
+
+		return \Response::json(DofDiario::find(255061));
+
+
 		$locale='es_MX.UTF-8';
 		setlocale(LC_ALL,$locale);
 		putenv('LC_ALL='.$locale);

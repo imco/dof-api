@@ -64,7 +64,6 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 								if (!$matches && strlen($decretoFull)>0){
 									$matches[0] = $decretoFull;
 								}
-								//var_dump($decretoFull);
 								if ($matches){
 									$decretoFull = $matches[0];
 									$decretoFull = $testHTML = preg_replace('/(&#\d{4});?/', '\1;', $decretoFull);
@@ -104,6 +103,66 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 							}
 							$contenidoPlano = trim(html_entity_decode (preg_replace('/(<style.*?<\/style>)|(<script.*?<\/script>)|(<[^>]+>)/i', '', $decretoFull)));
 							array_push($result, array('cod_diario' => $diario->cod_diario, 'cod_nota'=>$contentDecreto->cod_nota, 'titulo'=> $contentDecreto->tituloDecreto,'contenido' =>$decretoFull, 'contenido_plano'=>$contenidoPlano,'pagina'=>$contentDecreto->pagina, 'secretaria'=>$contentSecretaria->nombreSecretaria, 'organismo' =>$organismo->nomOrganismo, 'seccion'=>$seccion->numSeccion));
+						}
+					}
+				}
+			}
+		}
+
+
+		$date = DateTime::createFromFormat('Y-m-d', $this->fecha);
+
+		$diario2 = json_decode(DOFClientController::http_get('http://diariooficial.gob.mx/WS_getDiarioFull.php?year='.$date->format('Y').'&month='.$date->format('m').'&day='.$date->format('d')));
+		
+
+		if($diario2->ejemplares){
+			foreach($diario2->ejemplares AS $ejemplar){
+				if ($ejemplar->secciones){
+					foreach($ejemplar->secciones AS $seccion){
+						if ($seccion->contentsection){
+							foreach($seccion->contentsection as $organismo){
+								if ($organismo->content){
+									foreach($organismo->content AS $secretario){
+										if($secretaria->content){
+											foreach($secretaria->content AS $nota){
+												$newNota = true;
+
+												foreach($result as $key=>$oldNota){
+													if ($oldNota['cod_nota']== $nota->id){
+														$newNota = false;
+
+														$result[$key]['titulo'] = $nota->titulo;
+														break;
+													}
+												}
+
+												if ($newNota){
+													$decretoFull = NULL;
+											    	$tries = 5;
+													while (strlen($decretoFull)<=1 && $tries>0){
+														$decretoFull = DOFClientController::http_get('http://diariooficial.gob.mx/nota_detalle_popup.php?codigo='. $nota->id);
+
+														$matches = array();
+														preg_match('/<!DOCTYPE HTML .* <\/HTML>/', $decretoFull, $matches);
+														if (!$matches && strlen($decretoFull)>0){
+															$matches[0] = $decretoFull;
+														}
+														if ($matches){
+															$decretoFull = $matches[0];
+														}
+
+														$tries--;
+													}
+													$contenidoPlano = trim(html_entity_decode (preg_replace('/(<style.*?<\/style>)|(<script.*?<\/script>)|(<[^>]+>)/i', '', $decretoFull)));
+
+													array_push($result, array('cod_diario' => $ejemplar->id, 'cod_nota'=>$nota->id, 'titulo'=> $nota->titulo,'contenido' =>$decretoFull, 'contenido_plano'=>$contenidoPlano,'secretaria'=>$secretaria->name, 'organismo' =>$organismo->name, 'seccion'=>$seccion->secc));
+
+												}
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}

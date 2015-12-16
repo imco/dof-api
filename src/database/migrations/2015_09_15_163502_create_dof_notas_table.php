@@ -21,7 +21,7 @@ class CreateDofNotasTable extends Migration
             $table->integer('seccion');
             $table->string('organismo')->nullable();
             $table->string('secretaria');
-            $table->integer('pagina');
+            $table->integer('pagina')->nullable();
             $table->text('contenido')->nullable();
             $table->text('contenido_plano')->nullable();
 

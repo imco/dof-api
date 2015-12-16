@@ -17,16 +17,16 @@ class DOFDiariosSeeder extends Seeder
     public function run()
     {
         $dofClient = new DOFClientController;
+        print_r('Descargando códigos de diarios...');
         for ($year = date("Y"); $year>=1917 ; $year--){
-            print_r('Descargando códigos de diarios...');
-            var_dump($dofClient->getEditionsOnDate($year));
             $dofDiario = $dofClient->getEditionsOnDate($year)->getData();
             foreach($dofDiario->list as $diario){
                 $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
-
                 print_r($diario->fecha . "\n");
                 DofDiario::firstOrCreate((array)$diario);
             }
         }
+
+        print_r('Diarios seeded');
 	}
 }
