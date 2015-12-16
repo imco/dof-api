@@ -51,7 +51,7 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 		$diario = json_decode(DOFClientController::http_get('http://diariooficial.gob.mx/BB_DetalleEdicion.php?cod_diario='.$this->cod_diario));
 
 		print_r('http://diariooficial.gob.mx/BB_DetalleEdicion.php?cod_diario='.$this->cod_diario . "\n");
-		
+
 		if($diario->secciones){
 			foreach($diario->secciones AS $seccion){
 				foreach($seccion->organismos AS $organismo){
@@ -164,6 +164,24 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 														$tries--;
 													}
 													$contenidoPlano = trim(html_entity_decode (preg_replace('/(<style.*?<\/style>)|(<script.*?<\/script>)|(<[^>]+>)/i', '', $decretoFull)));
+
+													switch($seccion->secc){
+														case 'UNICA':
+															$seccion->secc = 1;
+															break;
+														case 'PRIMERA':
+															$seccion->secc = 1;
+															break;
+														case 'SEGUNDA':
+															$seccion->secc = 2;
+															break;
+														case 'TERCERA':
+															$seccion->secc = 3;
+															break;
+														case 'CUARTA':
+															$seccion->secc = 4;
+															break;
+													}
 
 													array_push($result, array('cod_diario' => $ejemplar->id, 'cod_nota'=>$nota->id, 'titulo'=> trim(html_entity_decode ($nota->titulo)),'contenido' =>$decretoFull, 'contenido_plano'=>$contenidoPlano,'secretaria'=>$secretaria->name, 'organismo' =>$organismo->name, 'seccion'=>$seccion->secc));
 
