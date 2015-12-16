@@ -104,7 +104,7 @@ class DOFClientController extends Controller {
 		        print_r("Inserted\n");
 		        $notas = [];
 		        foreach($newNotes AS $note){
-		        	$notas[] = $note['cod_nota']);
+		        	$notas[] = $note['cod_nota'];
 		        }
 
 	        	$menciones = DofNota::contains()->whereIn('cod_nota', $notas);
