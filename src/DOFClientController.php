@@ -77,6 +77,7 @@ class DOFClientController extends Controller {
 			$sumarios = $diario->getSummary();
 			//$result = array_merge($result, $sumarios);
 	        foreach($sumarios AS $sumario){
+	        	print_r("\tcod_nota\t" . $sumario->cod_nota . "\n");
 	            array_push($newNotes, array_merge((array)$sumario, array('created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s'))));
 	        }
 

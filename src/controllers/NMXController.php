@@ -99,7 +99,7 @@ class NMXController extends Controller {
 	public function getNMXDetalle($clave){
 		$clave = strtoupper($clave);
 		$norma = NormaVigente::with(['menciones.nota'=>function ($query){
-			$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario')->distinct();
+			$query->select('titulo', 'cod_nota', 'cod_diario')->distinct()->with('diario');
 		}])->where('clave', $clave)->first();
 		return \Response::json($norma);
 		
