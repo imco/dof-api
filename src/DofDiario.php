@@ -115,6 +115,7 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 		$diario2 = json_decode(DOFClientController::http_get('http://diariooficial.gob.mx/WS_getDiarioFull.php?year='.$date->format('Y').'&month='.$date->format('m').'&day='.$date->format('d')));
 		
 
+		print_r('http://diariooficial.gob.mx/WS_getDiarioFull.php?year='.$date->format('Y').'&month='.$date->format('m').'&day='.$date->format('d'));
 		if($diario2->ejemplares){
 			foreach($diario2->ejemplares AS $ejemplar){
 
