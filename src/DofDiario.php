@@ -135,7 +135,7 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 													if ($oldNota['cod_nota']== $nota->id){
 														$newNota = false;
 
-														$result[$key]['titulo'] = $nota->titulo;
+														$result[$key]['titulo'] = trim(html_entity_decode ($nota->titulo));
 														break;
 													}
 												}
@@ -159,7 +159,7 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 													}
 													$contenidoPlano = trim(html_entity_decode (preg_replace('/(<style.*?<\/style>)|(<script.*?<\/script>)|(<[^>]+>)/i', '', $decretoFull)));
 
-													array_push($result, array('cod_diario' => $ejemplar->id, 'cod_nota'=>$nota->id, 'titulo'=> $nota->titulo,'contenido' =>$decretoFull, 'contenido_plano'=>$contenidoPlano,'secretaria'=>$secretaria->name, 'organismo' =>$organismo->name, 'seccion'=>$seccion->secc));
+													array_push($result, array('cod_diario' => $ejemplar->id, 'cod_nota'=>$nota->id, 'titulo'=> trim(html_entity_decode ($nota->titulo)),'contenido' =>$decretoFull, 'contenido_plano'=>$contenidoPlano,'secretaria'=>$secretaria->name, 'organismo' =>$organismo->name, 'seccion'=>$seccion->secc));
 
 												}
 											}
