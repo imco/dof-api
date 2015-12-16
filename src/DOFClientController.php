@@ -68,12 +68,14 @@ class DOFClientController extends Controller {
 			$diario->save();
 		}
 
-		$result = [];
+		//$result = [];
 		foreach($diarios AS $diario){
+			print_r("cod_diario ". $diario->cod_diario . "\n");
+
 			$newNotes = array();
 			$date = DateTime::createFromFormat('Y-m-d', $diario->fecha);
 			$sumarios = $diario->getSummary();
-			$result = array_merge($result, $sumarios);
+			//$result = array_merge($result, $sumarios);
 	        foreach($sumarios AS $sumario){
 	            array_push($newNotes, array_merge((array)$sumario, array('created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s'))));
 	        }
@@ -100,7 +102,7 @@ class DOFClientController extends Controller {
 		    }
 		}
 
-		return $result;
+		//return $result;
 	}
 
 	public static function http_get($url){
