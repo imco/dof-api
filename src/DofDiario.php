@@ -115,12 +115,12 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 		$diario2 = json_decode(DOFClientController::http_get('http://diariooficial.gob.mx/WS_getDiarioFull.php?year='.$date->format('Y').'&month='.$date->format('m').'&day='.$date->format('d')));
 		
 
-		print_r('http://diariooficial.gob.mx/WS_getDiarioFull.php?year='.$date->format('Y').'&month='.$date->format('m').'&day='.$date->format('d'));
+		print_r('http://diariooficial.gob.mx/WS_getDiarioFull.php?year='.$date->format('Y').'&month='.$date->format('m').'&day='.$date->format('d') . "\n");
 		if($diario2->ejemplares){
 			foreach($diario2->ejemplares AS $ejemplar){
 
 				print_r("cod_diario $ejemplar->id\n");
-				if ($ejemplar->secciones){
+				if (property_exists($ejemplar, 'secciones')){
 					foreach($ejemplar->secciones AS $seccion){
 						if ($seccion->contentsection){
 							//if($seccion->contentsection as $organismo){
@@ -175,6 +175,9 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 							//}
 						}
 					}
+				}else{
+					error_log('Secciones doesn\'t exists');
+					var_dump($ejemplar);
 				}
 			}
 		}
