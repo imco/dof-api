@@ -49,6 +49,8 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 		$result = array();
 		
 		$diario = json_decode(DOFClientController::http_get('http://diariooficial.gob.mx/BB_DetalleEdicion.php?cod_diario='.$this->cod_diario));
+
+		print_r('http://diariooficial.gob.mx/BB_DetalleEdicion.php?cod_diario='.$this->cod_diario . "\n");
 		if($diario->secciones){
 			foreach($diario->secciones AS $seccion){
 				foreach($seccion->organismos AS $organismo){
