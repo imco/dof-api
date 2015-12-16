@@ -101,16 +101,12 @@ class DOFClientController extends Controller {
 		        $newNotes = array_values($newNotes);
 		        print_r("Sending...\n");
 		        $output = DofNota::insert($newNotes);
-
-		        //var_dump($output);
 		        print_r("Inserted\n");
-
 		        $notas = [];
 		        foreach($newNotes AS $note){
-		        	//$nota = DofNota::find($nota['cod_nota']);
-		        	array_push($notas, $nota['cod_nota']);
+		        	$notas[] = $note['cod_nota']);
 		        }
-		        
+
 	        	$menciones = DofNota::contains()->whereIn('cod_nota', $notas);
 
 		        print_r($menciones->toSql() . "\n");
