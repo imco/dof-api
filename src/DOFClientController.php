@@ -100,9 +100,11 @@ class DOFClientController extends Controller {
 		        DofNota::insert($newNotes);
 		        $diario->invalid=false;
 		        $diario->save();
+		        print_r("Inserted\n");
 		    }elseif ($diario->availablePdf == null){
 		    	$diario->invalid=true;
 		        $diario->save();
+		        error_log("Invalid\n");
 		    }
 		}
 
