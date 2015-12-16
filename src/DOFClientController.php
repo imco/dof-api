@@ -48,6 +48,10 @@ class DOFClientController extends Controller {
 	**/
 	public static function fillNotes($batchSize=5){
 		$diarios = DofDiario::select('dof_diarios.cod_diario')->leftJoin('dof_notas', 'dof_notas.cod_diario', '=', 'dof_diarios.cod_diario')->whereNull('cod_nota')->where('invalid', '=', false)->orderBy('fecha', 'desc')->limit($batchSize)->get();
+
+		$faltantes = DofDiario::select('dof_diarios.cod_diario')->leftJoin('dof_notas', 'dof_notas.cod_diario', '=', 'dof_diarios.cod_diario')->whereNull('cod_nota')->where('invalid', '=', false)->count();
+
+		print_r("Faltan $faltantes diarios por analizar.\n");
 		$dofClient = new DOFClientController();
 
 		$cod_diario = array();
