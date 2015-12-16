@@ -48,6 +48,8 @@ class NMXController extends Controller {
 	 *		)
 	 */
 	public function getNMXVigentes($filterType = null, $value=null){
+		ini_set('memory_limit', '-1');
+
 		$vigentes = NormaVigente::with(['menciones'=>function ($query){
 				$query->where('etiqueta', 'Vigencia')->with(['nota'=>function ($query){
 					$query->select('titulo', 'cod_nota', 'cod_diario')->with('diario');
