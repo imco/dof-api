@@ -10,7 +10,7 @@ class DofNota extends Model
     protected $connection = 'catalogoNoms';
     protected $primaryKey = 'cod_nota';
     protected $table = 'dof_notas';
-    protected $fillable = array('cod_diario', 'cod_nota', 'titulo', 'contenido', 'pagina', 'secretaria', 'organismo', 'seccion');
+    protected $fillable = array('cod_diario', 'cod_nota', 'titulo', 'contenido', 'contenido_plano', 'pagina', 'secretaria', 'organismo', 'seccion');
 
 
     public function diario(){
