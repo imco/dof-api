@@ -100,7 +100,9 @@ class DOFClientController extends Controller {
 	        if (count($newNotes) > 0 ){
 		        $newNotes = array_values($newNotes);
 		        print_r("Sending...\n");
-		        DofNota::insert($newNotes);
+		        $output = DofNota::insert($newNotes);
+
+		        var_dump($output);
 		        print_r("Inserted\n");
 		        $diario->invalid=false;
 		        $diario->save();
