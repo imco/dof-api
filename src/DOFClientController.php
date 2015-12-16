@@ -85,6 +85,7 @@ class DOFClientController extends Controller {
 	        }
 
 	        /* Verifica si una nota sin titulo está duplicada y el duplicado contiene el título */
+	        print_r("Cleaning...\n");
 	        foreach($newNotes AS $key =>$note){
 	        	if ($note['titulo'] == null){
 	        		foreach($newNotes AS $existingNote){
@@ -95,6 +96,7 @@ class DOFClientController extends Controller {
 	        		}
 	        	}
 	        }
+	        print_r("Inserting...\n");
 	        if (count($newNotes) > 0 ){
 		        $newNotes = array_values($newNotes);
 		        DofNota::insert($newNotes);
