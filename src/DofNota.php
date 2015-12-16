@@ -12,12 +12,17 @@ class DofNota extends Model
     protected $table = 'dof_notas';
     protected $fillable = array('cod_diario', 'cod_nota', 'titulo', 'contenido', 'contenido_plano', 'pagina', 'secretaria', 'organismo', 'seccion', 'created_at', 'updated_at');
 
+    public $pattern = '((d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}|[^\s>]*(nmx|nom(?!\w|\d|&\wacute;)))(([^\s])?[\w\d\/]+)+(?=(,\s|\)|\.\s|\s|<|\.?$)))';
+
 
     public function diario(){
     	return $this->belongsTo('IMCO\CatalogoNOMsApi\DofDiario', 'cod_diario', 'cod_diario');
     }
 
-    public function scopeContains($query, $patron){
+    public function scopeContains($query, $patron=null){
+    	if (!$patron){
+    		$patron = $this->pattern;
+    	}
     	return $query->select(DB::raw("DISTINCT cod_nota, CASE WHEN entity2char(titulo)  ~* '".$patron. "' THEN 'Título' ELSE 'Contenido' END AS ubicacion, entity2char((regexp_matches(titulo || ' '|| contenido, '".$patron."', 'gi'))[1]) as mencion"));
     }
 

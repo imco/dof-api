@@ -102,8 +102,31 @@ class DOFClientController extends Controller {
 		        print_r("Sending...\n");
 		        $output = DofNota::insert($newNotes);
 
-		        var_dump($output);
+		        //var_dump($output);
 		        print_r("Inserted\n");
+
+		        $notas = [];
+		        foreach($newNotes AS $note){
+		        	//$nota = DofNota::find($nota['cod_nota']);
+		        	array_push($notas, $nota['cod_nota']);
+		        }
+		        
+	        	$menciones = DofNota::contains()->whereIn('cod_nota', $notas);
+
+		        print_r($menciones->toSql() . "\n");
+		        foreach($menciones->get() AS $mencion){
+		            if (strpos($mencion->titulo, $mencion->mencion)==False){
+		                $mencion->ubicacion= 'Contenido';
+		            }else{
+		                $mencion->ubicacion= 'Título';
+		            }
+
+		            if (!in_array($mencion->mencion, ['dgn1.html', 'dgnon','dgning', 'dgn.karla@economia.gob.mx', 'nmx.gob.mx/normasmx/index.nmx', 'nmx.gob.mx/normasmx/', 'nmx@prodigy.net.mx', "d;'>gnidad", 'nmx.carbonoforestal@semarnat.gob.mx', "d;'>gnar"])){
+		                print_r("Match:\t$mencion->mencion\t$mencion->ubicacion\t$mencion->cod_nota\n");
+		                MencionEnNota::create(array('cod_nota'=>$mencion->cod_nota, 'mencion'=> $mencion->mencion, 'ubicacion'=>$mencion->ubicacion));
+		            }
+		        
+		        }
 		        $diario->invalid=false;
 		        $diario->save();
 		        print_r("Saved\n");
