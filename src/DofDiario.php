@@ -121,6 +121,7 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 					foreach($ejemplar->secciones AS $seccion){
 						if ($seccion->contentsection){
 							foreach($seccion->contentsection as $organismo){
+								var_dump($organismo);
 								if ($organismo->content){
 									foreach($organismo->content AS $secretario){
 										if($secretaria->content){
