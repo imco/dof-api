@@ -163,7 +163,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 
 
 
-		return \Response::json(DofDiario::find(255061));
+		return \Response::json(DofDiario::find(255061)->getSummary());
 
 
 		$locale='es_MX.UTF-8';
