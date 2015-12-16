@@ -181,6 +181,31 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 														case 'CUARTA':
 															$seccion->secc = 4;
 															break;
+														case 'QUINTA':
+															$seccion->secc = 5;
+															break;
+														case 'SEXTA':
+															$seccion->secc = 6;
+															break;
+														case 'SEPTIMA':
+															$seccion->secc = 7;
+															break;
+														case 'OCTAVA':
+															$seccion->secc = 8;
+															break;
+														case 'NOVENA':
+															$seccion->secc = 9;
+															break;
+														case 'DECIMA':
+															$seccion->secc = 10;
+															break;
+														case 'ONCEAVA':
+															$seccion->secc = 11;
+															break;
+														case 'DOCEAVA':
+															$seccion->secc = 12;
+															break;
+														
 													}
 
 													array_push($result, array('cod_diario' => $ejemplar->id, 'cod_nota'=>$nota->id, 'titulo'=> trim(html_entity_decode ($nota->titulo)),'pagina' =>null, 'contenido' =>$decretoFull, 'contenido_plano'=>$contenidoPlano,'secretaria'=>$secretaria->name, 'organismo' =>$organismo->name, 'seccion'=>$seccion->secc));
