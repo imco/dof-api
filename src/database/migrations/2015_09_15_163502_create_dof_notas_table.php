@@ -18,7 +18,7 @@ class CreateDofNotasTable extends Migration
             $table->integer('cod_nota');
             $table->integer('cod_diario');
             $table->text('titulo')->nullable();
-            $table->integer('seccion');
+            $table->integer('seccion')->nullable();
             $table->string('organismo')->nullable();
             $table->string('secretaria');
             $table->integer('pagina')->nullable();
