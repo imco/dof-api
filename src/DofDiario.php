@@ -125,10 +125,12 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 							//if($seccion->contentsection as $organismo){
 							$organismo = $seccion->contentsection;
 
-								//var_dump($organismo);
+								var_dump($organismo);
 								if ($organismo->content){
 									//foreach($organismo->content AS $secretaria){
 										$secretaria = $organismo->content;
+
+										var_dump($secretaria);
 										if($secretaria->content){
 											foreach($secretaria->content AS $nota){
 												$newNota = true;
