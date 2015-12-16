@@ -117,6 +117,8 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 
 		if($diario2->ejemplares){
 			foreach($diario2->ejemplares AS $ejemplar){
+
+				print_r("cod_diario $ejemplar->id\n");
 				if ($ejemplar->secciones){
 					foreach($ejemplar->secciones AS $seccion){
 						if ($seccion->contentsection){

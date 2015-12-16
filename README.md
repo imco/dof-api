@@ -24,7 +24,7 @@ y dentro del método `schedule`:
     })->everyFiveMinutes()->name('fillNotes')->withoutOverlapping();
 
     $schedule->call(function () {
-        DOFClientController::getYesterdayDof();
+        DOFClientController::getDofOnDate();
     })->twiceDaily(1, 22)->name('downloadDOF');
 
 Agregar la siguiente entrada en Cron
