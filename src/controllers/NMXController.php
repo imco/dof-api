@@ -59,16 +59,16 @@ class NMXController extends Controller {
 		if ($filterType){
 			switch($filterType){
 				case 'byctnn':
-					$vigentes->where('ctnn_slug', $value);
+					$vigentes->whereRaw("'$value' = ANY (ARRAY(SELECT btrim(json_array_elements::text, '\"') FROM json_array_elements(ctnn_slug))::varchar[] )");
 					break;
 				case 'byramaeconomica':
 					$vigentes->where('rama_economica_slug', $value);
 					break;
 				case 'byonn':
-					$vigentes->where('onn_slug', $value);
+					$vigentes->whereRaw("'$value' = ANY (ARRAY(SELECT btrim(json_array_elements::text, '\"') FROM json_array_elements(onn_slug))::varchar[] )");
 					break;
 				case 'bykeyword':
-					$vigentes->whereRaw("palabras_clave @> '{". strtoupper($value) ."}'");
+					$vigentes->whereRaw("'$value' = ANY (ARRAY(SELECT btrim(json_array_elements::text, '\"') FROM json_array_elements(palabras_clave))::varchar[] )");
 					break;
 			}
 
