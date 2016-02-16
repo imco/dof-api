@@ -102,9 +102,10 @@ class NMXController extends Controller {
 		$norma = NormaVigente::with(['menciones'=>function ($query){
 			$query->with(['nota' => function ($query) {
 				$query->select('titulo', 'cod_nota', 'cod_diario')
-				->whereRaw("titulo !~* '(norma oficial mexicana)|(programa nacional de normalizaci[oó]n)'")
 				->distinct()->with('diario');
-			}])->has('nota');
+			}])->whereHas('nota', function($query){
+				$query->whereRaw("titulo !~* '(norma oficial mexicana)|(programa nacional de normalizaci[oó]n)'");
+			});
 		}])->where('clave', $clave)->first();
 		
 
