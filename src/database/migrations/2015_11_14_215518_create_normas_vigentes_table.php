@@ -22,18 +22,17 @@ class CreateNormasVigentesTable extends Migration
             $table->string('archivo');
             $table->date('fecha_publicacion');
             $table->string('tipo');
-            $table->string('producto');
+
             $table->string('rama_economica');
-            $table->string('ctnn');
-            $table->string('onn');
+            $table->json('palabras_clave');
+            $table->json('ctnn')->nullable();
+            $table->json('onn')->nullable();
 
             $table->string('rama_economica_slug');
-            $table->string('ctnn_slug');
-            $table->string('onn_slug');
+            $table->json('ctnn_slug')->nullable();
+            $table->json('onn_slug')->nullable();
 
             $table->timestamps();
-
-            //$table->index()
         });
 
         //DB::connection($this->connection)->statement("create view catalogonoms_view_nmx as select diario.cod_diario, fecha, cod_nota, titulo from catalogonoms_dof_notas nota JOIN catalogonoms_dof_diarios diario ON diario.cod_diario = nota.cod_diario where titulo ~ 'NMX|normas?\s*mexicanas?';");

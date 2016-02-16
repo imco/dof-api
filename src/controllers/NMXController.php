@@ -98,9 +98,16 @@ class NMXController extends Controller {
 
 	public function getNMXDetalle($clave){
 		$clave = strtoupper($clave);
-		$norma = NormaVigente::with(['menciones.nota'=>function ($query){
-			$query->select('titulo', 'cod_nota', 'cod_diario')->distinct()->with('diario');
+
+		$norma = NormaVigente::with(['menciones'=>function ($query){
+			$query->with(['nota' => function ($query) {
+				$query->select('titulo', 'cod_nota', 'cod_diario')
+				->whereRaw("titulo !~* '(norma oficial mexicana)|(programa nacional de normalizaci[oó]n)'")
+				->distinct()->with('diario');
+			}])->has('nota');
 		}])->where('clave', $clave)->first();
+		
+
 		return \Response::json($norma);
 		
 	}
@@ -117,11 +124,10 @@ class NMXController extends Controller {
 	 */
 
 	public function getCTNNList(){
-		$ctnns = NormaVigente::select('ctnn', 'ctnn_slug')->distinct()->get();
-		//foreach($ctnns AS $key=>$value){
-		//	$ctnns[$key]->ctnn_slug = \Slug\Slugifier::slugify($value->ctnn);
-			//$ctnns[$key]->save();
-		//}
+		$ctnns = NormaVigente::selectRaw('json_array_elements(ctnn)::varchar AS ctnn')->whereNotNull('ctnn')->orderBy('ctnn')->distinct()->get();
+		foreach($ctnns AS $key=>$value){
+			$ctnns[$key]->ctnn_slug = \Slug\Slugifier::slugify($value->ctnn);
+		}
 		return \Response::json($ctnns);
 		
 	}
@@ -139,11 +145,10 @@ class NMXController extends Controller {
 	 */
 
 	public function getONNList(){
-		$onns = NormaVigente::select('onn', 'onn_slug')->whereNotNull('onn')->distinct()->orderBy('onn')->get();
-		/*foreach($onns AS $key=>$value){
+		$onns = NormaVigente::selectRaw('json_array_elements(onn)::varchar AS onn')->whereNotNull('onn')->distinct()->orderBy('onn')->get();
+		foreach($onns AS $key=>$value){
 			$onns[$key]->onn_slug = \Slug\Slugifier::slugify($value->onn);
-			$onns[$key]->save();
-		}*/
+		}
 		return \Response::json($onns);
 		
 	}
@@ -158,7 +163,7 @@ class NMXController extends Controller {
 	 *		)
 	 */
 	public function getKeywords(){
-		$keywords = NormaVigente::select(DB::raw('unnest(palabras_clave) AS keyword'))->distinct()->orderBy('keyword')->get();
+		$keywords = NormaVigente::selectRaw('json_array_elements(palabras_clave)::varchar AS keyword')->distinct()->orderBy('keyword')->get();
 		return \Response::json($keywords);
 	}
 

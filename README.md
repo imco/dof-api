@@ -1,14 +1,40 @@
 # Diario Oficial de la Federeción / Normas Mexicanas - API
 ## Descripción
-Paquete de Laravel 5.
-Utiliza el Webservice del DOF para copiar la información a una base de datos local y poder realizar operaciones más comodamente en las publicaciones del DOF. Así mismo aporta una extensión del API actual del DOF ofreciendo funcionalidades extras cómo clasificación de las Normas Mexicanas.
+Copia de la Base de Datos del Diario Oficial de la Federación. Paquete de Laravel 5.
 
-## Contenido
+### Modulos extras contenidos
+* Catalogo de NOMs
+* Catalogo de NMX
+
+### Nodos de acceso
+Este API utiliza los siguientes Idendificadores de Recurso Uniforme (URL) para mantener actualizada la Base de Datos:
+
+* Para obtener las fechas que tienen publicación en un mes:
+http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=2012&month=08
+
+* Conocer si hay archivo PDF disponible para una fecha específica:
+http://diariooficial.gob.mx/WS_getDiarioPDF.php?day=29&month=08&year=2012&edicion=MAT
+
+* Un modelo para obtener el sumario completo del día con un parámetro menos (en éste sólo se pasa el cod_diario):
+http://diariooficial.gob.mx/BB_DetalleEdicion.php?cod_diario=253279
+
+* Con éste podrán conocer a partir de una fecha específica, los códigos de diario de las 99 fechas anteriores, cada una identificada con fecha y edición:
+http://diariooficial.gob.mx/BB_menuPrincipal.php?day=08&month=09&year=2014
+
+#### Observaciones
+
+Uno de los nodos para consultar las notas devuelve el resultado con una codificación de carácteres incorrecta. El otro las devuelve correctamente codificadas pero se han identificado *notas* que existen en el primer nodo más no en el segundo.
+
+## Tabla de Contenido
 *[Instalación](#instalacion)
 *[Agredecimientos](#agradecimientos)
 *[Licencia](#licencia)
 
 ## Instalación
+
+### Base de datos inicial
+Se puede descargar un respaldo de la Base de Datos (hasta )
+
 ### Clasificador
 El clasificador es un script de Python3, el cuál utiliza la libreria NLTK http://www.nltk.org/ junto con el paquete "punkt"
 

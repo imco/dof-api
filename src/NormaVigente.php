@@ -9,8 +9,15 @@ class NormaVigente extends Model
     protected $connection = 'catalogoNoms';
     protected $primaryKey = 'clave';
     protected $table = 'normas_vigentes';
-    protected $fillable = ["clave","secretaria","titulo","archivo","fecha_publicacion","tipo","producto","rama_economica","ctnn","onn"];
+    protected $fillable = ["clave","secretaria","ctnn_slug", "onn_slug", "rama_economica_slug", "palabras_clave", "titulo","archivo","fecha_publicacion","tipo","producto","rama_economica","ctnn","onn"];
 
+    protected $casts = [
+        'palabras_clave' => 'array',
+        'ctnn' =>'array',
+        'onn'=>'array',
+        'ctnn_slug'=>'array',
+        'onn_slug'=>'array'
+    ];
 
     public function scopeConFechaPublicacionIncorrecta($query){
 
