@@ -163,7 +163,7 @@ class NMXController extends Controller {
 	 *		)
 	 */
 	public function getKeywords(){
-		$keywords = NormaVigente::selectRaw('json_array_elements(palabras_clave)::varchar AS keyword')->distinct()->orderBy('keyword')->get();
+		$keywords = NormaVigente::selectRaw("btrim(json_array_elements(palabras_clave)::varchar, '\"') AS keyword")->distinct()->orderBy('keyword')->get();
 		return \Response::json($keywords);
 	}
 
