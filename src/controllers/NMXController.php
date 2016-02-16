@@ -126,7 +126,7 @@ class NMXController extends Controller {
 	public function getCTNNList(){
 		$ctnns = NormaVigente::selectRaw('json_array_elements(ctnn)::varchar AS ctnn')->whereNotNull('ctnn')->orderBy('ctnn')->distinct()->get();
 		foreach($ctnns AS $key=>$value){
-			$ctnns[$key]->ctnn_slug = \Slug\Slugifier::slugify($value->ctnn);
+			$ctnns[$key]->ctnn_slug = \Slug\Slugifier::slugify($value->ctnn, '-', True);
 		}
 		return \Response::json($ctnns);
 		
@@ -147,7 +147,7 @@ class NMXController extends Controller {
 	public function getONNList(){
 		$onns = NormaVigente::selectRaw('json_array_elements(onn)::varchar AS onn')->whereNotNull('onn')->distinct()->orderBy('onn')->get();
 		foreach($onns AS $key=>$value){
-			$onns[$key]->onn_slug = \Slug\Slugifier::slugify($value->onn);
+			$onns[$key]->onn_slug = \Slug\Slugifier::slugify($value->onn, '-', True);
 		}
 		return \Response::json($onns);
 		
