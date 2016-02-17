@@ -1,10 +1,10 @@
-# Diario Oficial de la Federeción / Normas Mexicanas - API
+# Diario Oficial de la Federación / Normas Mexicanas - API
 ## Descripción
 Copia de la Base de Datos del Diario Oficial de la Federación. Paquete de Laravel 5.
 
 ### Modulos extras contenidos
-* Catalogo de NOMs
-* Catalogo de NMX
+* <a href="//noms.imco.org.mx">Catalogo de NOMs</a>
+* <a href="//nmx.imco.org.mx">Catalogo de NMX</a>
 
 ### Nodos de acceso
 Este API utiliza los siguientes Idendificadores de Recurso Uniforme (URL) para actualizar la Base de Datos:
