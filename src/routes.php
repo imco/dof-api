@@ -6,6 +6,10 @@ use IMCO\CatalogoNOMsApi\DofNota;
 use IMCO\CatalogoNOMsApi\DOFClientController;
 //use Response;
 
+Route::group(array('prefix' => 'dof', 'namespace'=>'IMCO\CatalogoNOMsApi'), function () {
+	Route::get('/ultimo', 'DatasetController@getDOFLastDownloadedPublication');
+	Route::get('/primero', 'DatasetController@getDOFFirstDownloadedPublication');
+});
 
 Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsApi'), function () {
 

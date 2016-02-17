@@ -7,7 +7,7 @@ Copia de la Base de Datos del Diario Oficial de la Federación. Paquete de Larav
 * Catalogo de NMX
 
 ### Nodos de acceso
-Este API utiliza los siguientes Idendificadores de Recurso Uniforme (URL) para mantener actualizada la Base de Datos:
+Este API utiliza los siguientes Idendificadores de Recurso Uniforme (URL) para actualizar la Base de Datos:
 
 * Para obtener las fechas que tienen publicación en un mes:
 http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=2012&month=08

@@ -36,6 +36,34 @@ class DatasetController extends Controller {
 		
 	}
 
+	/**
+	 *		@SWG\Path(
+	 *			path = "/dof/ultimo",
+	 *			@SWG\Get(
+	 *				summary = "Última publicación descargada del Diario Oficial de la Federación.",
+	 *				tags = {"Diario Oficial de la Federación"},
+	 *				@SWG\Response(response = "200", description = "Descripción de la útima publicación descargada.", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
+	public function getDOFLastDownloadedPublication(){
+		return (DofDiario::orderBy('fecha', 'DESC')->first());
+	}
+
+
+	/**
+	 *		@SWG\Path(
+	 *			path = "/dof/primero",
+	 *			@SWG\Get(
+	 *				summary = "Primera publicación descargada del Diario Oficial de la Federación.",
+	 *				tags = {"Diario Oficial de la Federación"},
+	 *				@SWG\Response(response = "200", description = "Descripción de la primera publicación descargada.", @SWG\Schema(type = "json"))
+	 * 			)
+	 *		)
+	 */
+	public function getDOFFirstDownloadedPublication(){
+		return (DofDiario::orderBy('fecha', 'ASC')->first());
+	}
 
 	public function getPublicacionCSV(){
 		//ini_set('memory_limit', '-1');
