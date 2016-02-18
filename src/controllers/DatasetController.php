@@ -38,7 +38,7 @@ class DatasetController extends Controller {
 
 	/**
 	 *		@SWG\Path(
-	 *			path = "dof/ultimo",
+	 *			path = "/dof/ultimo",
 	 *			@SWG\Get(
 	 *				summary = "Última publicación descargada del Diario Oficial de la Federación.",
 	 *				tags = {"Diario Oficial de la Federación"},
@@ -53,7 +53,7 @@ class DatasetController extends Controller {
 
 	/**
 	 *		@SWG\Path(
-	 *			path = "dof/primero",
+	 *			path = "/dof/primero",
 	 *			@SWG\Get(
 	 *				summary = "Primera publicación descargada del Diario Oficial de la Federación.",
 	 *				tags = {"Diario Oficial de la Federación"},

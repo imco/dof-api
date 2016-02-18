@@ -7,8 +7,8 @@ use IMCO\CatalogoNOMsApi\DOFClientController;
 //use Response;
 
 Route::group(array('prefix' => 'dof', 'namespace'=>'IMCO\CatalogoNOMsApi'), function () {
-	Route::get('/ultimo', 'DatasetController@getDOFLastDownloadedPublication');
-	Route::get('/primero', 'DatasetController@getDOFFirstDownloadedPublication');
+	Route::get('ultimo', ['middleware'=>'analytics', 'uses'=>'DatasetController@getDOFLastDownloadedPublication']);
+	Route::get('primero', ['middleware'=>'analytics', 'uses'=>'DatasetController@getDOFFirstDownloadedPublication']);
 });
 
 Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsApi'), function () {
@@ -100,7 +100,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
  */
 
 	Route::group(array('prefix' => 'dof'), function () {
-		Route::get('{resource}', 'DatasetController@getCSV');
+		//Route::get('csv/{resource}', 'DatasetController@getCSV');
 		Route::get('edicion/{year}/{month?}/{day?}', 'DOFClientController@getEditionsOnDate');
 		Route::get('sumario/{year}/{month}/{day}', 'DOFClientController@getDateSummary');	
 	});
@@ -163,57 +163,8 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
 	});
 
 	Route::get('test', function(){
-
-
-		return DOFClientController::fillNotes();
-
-		//return \Response::json(DofDiario::find(255061)->getSummary());
-
-
-		$locale='es_MX.UTF-8';
-		setlocale(LC_ALL,$locale);
-		putenv('LC_ALL='.$locale);
-
-		$path = base_path('bin');
-		$data = base_path('database/data');
 		
-		$notas = DofNota::where('titulo', '~', 'NMX')->limit(100)->get();
 
-		$result = "cod_nota\ttitulo\ttipo\tclave\tclasificación\n";
-		foreach($notas AS $nota){
-			//$nota = DofNota::find($cod_nota);
-			$subject = `$path/clasificador.py -i $data/knowledgebase.csv "$nota->titulo"`;
-
-			if (strlen($subject)>0){
-				foreach(preg_split("/((\r?\n)|(\r\n?))/", $subject) as $line){
-					if (strlen($line)>0){
-						$result .= "$nota->cod_nota\t$nota->titulo\t$line\n";
-					}
-				}
-			}else{
-				$result .= "$nota->cod_nota\t$nota->titulo\n";	
-			}
-		}
-		
-		return \Response::make($result,200, ['Content-Type'=>'text/plain', "Content-Disposition"=>"attachment; filename=nmx.csv"]);
-		
-		//DOFClientController::fillNotes();
-
-
-/*		DOFNota::find(763543)->updateTitulo();
-		return DofNota::find(763543)->titulo;
-//*/
-/*
-		print_r("STARTING...\n");
-		$notes = DofNota::whereRaw('titulo ~ \'\?\?\' and contenido is not null')->limit(1)->get();
-		foreach($notes AS $nota){
-			print_r("$nota->titulo \t=> ");
-			$nota->updateTitulo();
-			print_r("$nota->titulo\n");
-		}
-/
-		//return Response::make()->header("Content-Type", "plain/text");
-//*/
 	});
 
 
