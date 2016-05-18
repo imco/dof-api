@@ -14,7 +14,7 @@ class NMXController extends Controller {
 	 *			@SWG\Get(
 	 *				summary = "Resumen de las normas vigentes",
 	 *				tags = {"CatalogoNMX"},
-	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
 	 * 			)
 	 *		)
 	 */
@@ -43,7 +43,7 @@ class NMXController extends Controller {
 	 *					default = "no-aplica",
 	 * 					description="Valor del Slug por el que se ha de filtrar"
 	 *				),
-	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
 	 * 			)
 	 *		)
 	 */
@@ -91,7 +91,7 @@ class NMXController extends Controller {
 	 *					default = "NMX-A-001-1965",
 	 * 					description="Clave de la Norma"
 	 *				),
-	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
 	 * 			)
 	 *		)
 	 */
@@ -119,7 +119,7 @@ class NMXController extends Controller {
 	 *			@SWG\Get(
 	 *				summary = "Lista de CTNN",
 	 *				tags = {"CatalogoNMX"},
-	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
 	 * 			)
 	 *		)
 	 */
@@ -140,7 +140,7 @@ class NMXController extends Controller {
 	 *			@SWG\Get(
 	 *				summary = "Lista de ONN",
 	 *				tags = {"CatalogoNMX"},
-	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
 	 * 			)
 	 *		)
 	 */
@@ -159,7 +159,7 @@ class NMXController extends Controller {
 	 *			@SWG\Get(
 	 *				summary = "Lista de palabras clave",
 	 *				tags = {"CatalogoNMX"},
-	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
 	 * 			)
 	 *		)
 	 */
@@ -174,7 +174,7 @@ class NMXController extends Controller {
 	 *			@SWG\Get(
 	 *				summary = "Lista de ramas económicas",
 	 *				tags = {"CatalogoNMX"},
-	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+	 *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
 	 * 			)
 	 *		)
 	 */
