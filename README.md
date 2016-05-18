@@ -81,6 +81,14 @@ Si se omite el prefijo `CN`, el paquete intentará conectarse utilizando las var
 
 En cuyo caso al nombre de las tablas generadas se les incluirá el prefijo `catalognoms_` para poder distinguirlas de cualquier otra tabla que se encuentre en la misma base de datos
 
+### Analytics
+
+Para rastrear el uso del API es necesario agregar el código de rastreo al archivo de variables de ambiente `.env` y registrar el Middleware en nuestra aplicación.
+
+    TRACKINGCODE="UA-XXXXX-1"
+
+
+
 ## Agradecimientos
 * [PROPEM (Programa de Política Económica para México)](https://propem.org/es/)
 

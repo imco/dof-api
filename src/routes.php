@@ -20,7 +20,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
  *				summary = "Notas publicadas en el DOF",
  *				description = "CSV con las notas descargadas de publicaciones del DOF.",
  *				tags = {"CatalogoNOMs"},
- *				@SWG\Response(response = "200", description = "CSV con las notas descargadas de publicaciones del DOF", @SWG\Schema(type = "csv"))
+ *				@SWG\Response(response = "200", description = "CSV con las notas descargadas de publicaciones del DOF", @SWG\Schema(type = "object"))
  * 			)
  *		)
  *		@SWG\Path(
@@ -53,7 +53,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
  *					default = 2012,
  * 					description="Año a consultar"
  *				),
- *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+ *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
  * 			)
  *		)
  *		@SWG\Path(
@@ -78,7 +78,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
  * 					type="integer",
  * 					description="Año a consultar"
  *				),
- *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+ *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
  * 			)
  *		)
  *		@SWG\Path(
@@ -94,7 +94,7 @@ Route::group(array('prefix' => 'catalogonoms', 'namespace'=>'IMCO\CatalogoNOMsAp
  *					default = 2012,
  * 					description="Año a consultar"
  *				),
- *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "json"))
+ *				@SWG\Response(response = "200", description = "JSON de respuesta", @SWG\Schema(type = "object"))
  * 			)
  *		)
  */
