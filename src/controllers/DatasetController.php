@@ -42,7 +42,7 @@ class DatasetController extends Controller {
 	 *			@SWG\Get(
 	 *				summary = "Última publicación descargada del Diario Oficial de la Federación.",
 	 *				tags = {"Diario Oficial de la Federación"},
-	 *				@SWG\Response(response = "200", description = "Descripción de la útima publicación descargada.", @SWG\Schema(type = "json"))
+	 *				@SWG\Response(response = "200", description = "Descripción de la útima publicación descargada.", @SWG\Schema(type = "object"))
 	 * 			)
 	 *		)
 	 */
@@ -57,7 +57,7 @@ class DatasetController extends Controller {
 	 *			@SWG\Get(
 	 *				summary = "Primera publicación descargada del Diario Oficial de la Federación.",
 	 *				tags = {"Diario Oficial de la Federación"},
-	 *				@SWG\Response(response = "200", description = "Descripción de la primera publicación descargada.", @SWG\Schema(type = "json"))
+	 *				@SWG\Response(response = "200", description = "Descripción de la primera publicación descargada.", @SWG\Schema(type = "object"))
 	 * 			)
 	 *		)
 	 */
