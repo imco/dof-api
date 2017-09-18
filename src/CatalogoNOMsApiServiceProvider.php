@@ -13,7 +13,7 @@ class CatalogoNOMsApiServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->publishes([__DIR__.'/config/database.php' => config_path('catalogonoms/database.php')]);
-		
+
 		$this->publishes([__DIR__.'/database/data' => base_path('database/data')]);
 		$this->publishes([__DIR__.'/database/migrations' => base_path('database/migrations')]);
 		$this->publishes([__DIR__.'/database/seeds' => base_path('database/seeds')]);
@@ -30,7 +30,7 @@ class CatalogoNOMsApiServiceProvider extends ServiceProvider {
 		$this->publishes([__DIR__.'/../bin' => base_path('bin')]);
 		$path = base_path('bin');
 		//`chmod +x $path/*`;
-		
+
 		Config::set('database.connections.catalogoNoms' , Config::get('catalogonoms.database.connections.catalogoNoms'));
 		Config::set('database.connections.CatalogoNomsOld' , Config::get('catalogonoms.database.connections.CatalogoNomsOld'));
 	}
@@ -42,10 +42,10 @@ class CatalogoNOMsApiServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		require __DIR__.'/routes.php';
-		require __DIR__.'/controllers/DatasetController.php';
-		require __DIR__.'/controllers/NMXController.php';
-		require __DIR__.'/middleware/GoogleAnalyticsMiddleware.php';
+		require_once __DIR__.'/routes.php';
+		require_once __DIR__.'/controllers/DatasetController.php';
+		require_once __DIR__.'/controllers/NMXController.php';
+		require_once __DIR__.'/middleware/GoogleAnalyticsMiddleware.php';
 		$this->app->make('IMCO\CatalogoNOMsApi\DatasetController');
 		$this->app->make('IMCO\CatalogoNOMsApi\CatalogoNOMsController');
 		$this->app->make('IMCO\CatalogoNOMsApi\DOFClientController');
