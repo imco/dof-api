@@ -14,19 +14,19 @@
             "email": "emir.herrera@imco.org.mx"
         },
         {
-			"name": "Hugo Cardoza",
-			"email": "hugo.cardoza@imco.org.mx"
+            "name": "Hugo Cardoza",
+            "email": "hugo.cardoza@imco.org.mx"
         }
     ],
     "autoload": 
 	{
 		"psr-4": {
 			"IMCO\\CatalogoNOMsApi\\" : "src/",
-            "Slug\\" : "src/vendor/kevinlebrun/slug.php/src/Slug/"
+                        "Slug\\" : "src/vendor/kevinlebrun/slug.php/src/Slug/"
 		}
 	},
     "require": {
-        "kevinlebrun/slug.php" : "master-dev",
+        "kevinlebrun/slug.php" : "1.0.1",
         "doctrine/dbal": "2.5.2"
     }
 }
