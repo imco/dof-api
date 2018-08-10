@@ -3,11 +3,11 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use DateTime;
-use DB; 
+use DB;
 
 class NMXController extends Controller {
 	protected $connection = 'catalogoNoms';
-	
+
 	/**
 	 *		@SWG\Path(
 	 *			path = "/catalogonoms/nmx/vigentes",
@@ -107,10 +107,10 @@ class NMXController extends Controller {
 				$query->whereRaw("titulo !~* '(norma oficial mexicana)|(programa nacional de normalizaci[oó]n)'");
 			});
 		}])->where('clave', $clave)->first();
-		
+
 
 		return \Response::json($norma);
-		
+
 	}
 
 	/**
@@ -130,7 +130,7 @@ class NMXController extends Controller {
 			$ctnns[$key]->ctnn_slug = \Slug\Slugifier::slugify($value->ctnn, '-', True);
 		}
 		return \Response::json($ctnns);
-		
+
 	}
 
 
@@ -151,7 +151,7 @@ class NMXController extends Controller {
 			$onns[$key]->onn_slug = \Slug\Slugifier::slugify($value->onn, '-', True);
 		}
 		return \Response::json($onns);
-		
+
 	}
 	/**
 	 *		@SWG\Path(

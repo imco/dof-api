@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 
 use DB;
 use Response;
-use Input; 
+use Input;
 
 use Illuminate\Http\Request;
 
@@ -35,12 +35,12 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308661
 
 class DOFClientController extends Controller {
 	protected $connection = 'CatalogoNoms';
-	
+
 
 	public static function reformatDateString($string){
 		$date = DateTime::createFromFormat('d-M-Y', str_replace(array('Ene','Abr','Ago', 'Dic'),array('Jan','Apr', 'Aug', 'Dec'),$string));
 		$dateReformat = $date->format('Y') .'-' . $date->format('m'). '-' . $date->format('d');
-		
+
 		return $dateReformat;
 	}
 
@@ -61,7 +61,7 @@ class DOFClientController extends Controller {
 
 		$diarios = DofDiario::findMany($cod_diario);
 
-		
+
 		foreach($diarios AS $diario){
 			$diario->invalid = NULL;
 			$diario->availablePdf = $diario->getAvailablePdf();
@@ -121,7 +121,7 @@ class DOFClientController extends Controller {
 		                print_r("Match:\t$mencion->mencion\t$mencion->ubicacion\t$mencion->cod_nota\n");
 		                MencionEnNota::create(array('cod_nota'=>$mencion->cod_nota, 'mencion'=> $mencion->mencion, 'ubicacion'=>$mencion->ubicacion));
 		            }
-		        
+
 		        }
 		        $diario->invalid=false;
 		        $diario->save();
@@ -169,7 +169,7 @@ class DOFClientController extends Controller {
 
 		$info = curl_getinfo($ch);
 		$header = curl_exec($ch);
-		
+
 		// Close the cURL resource, and free system resources
 		curl_close($ch);
 //		var_dump($header);
@@ -203,7 +203,7 @@ class DOFClientController extends Controller {
             $diario->fecha = DOFClientController::reformatDateString($diario->fecha);
             $diario = DofDiario::firstOrCreate((array)$diario);
             if($diario->availablePdf == null){
-            	$diario->availablePdf = $diario->getAvailablePdf();	
+            	$diario->availablePdf = $diario->getAvailablePdf();
             }
         }
 
@@ -268,7 +268,7 @@ class DOFClientController extends Controller {
 	}
 
 	function getEditionsOnDate($year,$month=0, $day = 0){
-		//return http_get("http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=$year&month=$month");		
+		//return http_get("http://diariooficial.gob.mx/WS_getDiarioFecha.php?year=$year&month=$month");
 		if (!function_exists('curl_init')){
 		    abort(500);
 		}
@@ -286,13 +286,13 @@ class DOFClientController extends Controller {
 		if($day!=0) {
 			if (in_array($day, $output->availableDays)){
 				$result = array();
-								
+
 				$output = json_decode(self::http_get("http://diariooficial.gob.mx/BB_menuPrincipal.php?day=". $date->format('d') ."&month=" . $date->format('n') ."&year=" . $date->format('Y')));
 				foreach($output->list AS $publicacion){
-					
+
 					$datePublicacion = DateTime::createFromFormat('d-M-Y', str_replace(array('Ene','Abr','Ago', 'Dic'),array('Jan','Apr', 'Aug', 'Dec'),$publicacion->fecha));
 					$datePublicacionStr = $datePublicacion->format('d') .'-' . $meses[$datePublicacion->format('n')-1] . '-' . $datePublicacion->format('Y');
-					
+
 					if ($dateStr == $publicacion->fecha){
 						array_push($result, $publicacion);
 					}
@@ -302,7 +302,7 @@ class DOFClientController extends Controller {
 			}
 		}else{
 			$result = array();
-			
+
 			if ($month != 0){
 				$dateStart = DateTime::createFromFormat('d-m-Y', "1-$month-$year");
 				$dateEnd = DateTime::createFromFormat('d-m-Y', "0-$month-$year");
@@ -316,12 +316,15 @@ class DOFClientController extends Controller {
 			$finished = false;
 
 			while (!$finished){
+				print_r("\nhttp://diariooficial.gob.mx/BB_menuPrincipal.php?day=". $date->format('d') ."&month=" . $date->format('n') ."&year=" . $date->format('Y')."\n");
+
 				$output = json_decode(self::http_get("http://diariooficial.gob.mx/BB_menuPrincipal.php?day=". $date->format('d') ."&month=" . $date->format('n') ."&year=" . $date->format('Y')));
+				var_dump($output);
 				foreach($output->list AS $publicacion){
-					
+
 					$datePublicacion = DateTime::createFromFormat('d-M-Y', str_replace(array('Ene','Abr','Ago', 'Dic'),array('Jan','Apr', 'Aug', 'Dec'),$publicacion->fecha));
 					$datePublicacionStr = $datePublicacion->format('d') .'-' . $meses[$datePublicacion->format('n')-1] . '-' . $datePublicacion->format('Y');
-					
+
 					if ($datePublicacion >=$dateStart && $datePublicacion <=$dateEnd){
 						array_push($result, $publicacion);
 						if ($datePublicacion <= $date) {
@@ -335,7 +338,7 @@ class DOFClientController extends Controller {
 			}
 
 		}
-		
+
 		return response::json(array('total'=> count($result), 'list'=>$result));
 	}
 

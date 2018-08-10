@@ -1,3 +1,6 @@
+# Requiere Python3 y nltk (Natural language toolkit)
+#
+
 SHELL := /bin/bash
 #FUENTE := nmx-en-dof.csv
 FUENTE := catalogonoms_dof_notas.csv
@@ -12,13 +15,22 @@ DEBUGFILE := "nmx-no-localizadas.csv"
 
 all: currentTask
 
+# Instala las dependencias necesarias
+dependencies:
+	sudo apt install python3 python3-pip
+	pip3 install -U nltk
+	printf "import nltk \nnltk.download('punkt')\n" | python3
+
+
+
+
 currentTask:
 	@clear
 #	@./bin/clasificador.py --match=2,3 -t ${TRAININGDATA} -f ${INPUT}
 	@./bin/clasificador.py --match ${MATCHREGEX} -t ${TRAININGDATA} ${TESTSTRING}  #| csvtool col 2,3 -
 #	csvquery titulares-nmx-clasificados.csv nmx-activas.csv -q 'SELECT clave FROM csv2 EXCEPT SELECT clave_nmx from csv;' > nmx-no-localizadas.csv
 #
-# VERY IMPORTANT !!! 
+# VERY IMPORTANT !!!
 # Execute on server side
 #nohup psql catalogonomsv2 -a -c "CREATE TABLE catalogonoms_dof_notas_plano AS (select *, trim(entity2char(regexp_replace(contenido, '(<style.*?</style>)|(<[^>]+>)|(<script.*?</script>)|(<[^>]+>)', '', 'g'))) AS contenido_plano from catalogonoms_dof_notas);" && psql catalogonomsv2 -a -c "CREATE TABLE catalogonoms_claves_mencionadas AS (WITH t1 AS (select DISTINCT cod_nota,  (regexp_matches(contenido_plano, '((d[^\d\w]{0,3}g[^\d\w]{0,3}n[^\d\w]{0,3}|[^\s>]*(nmx|nom(?"'!'"\w|\d|&\wacute;)))(([^\s])?[\w\d/]+)+(?=(,\s|\.\s|\s|<|\.?$$)))', 'gi'))[1] as mencion, titulo from catalogonoms_dof_notas_plano) SELECT cod_nota, mencion, CASE WHEN titulo  ~* mencion THEN 'Título' ELSE 'Contenido' END AS ubicacion, null::varchar as etiqueta, now() AS created_at, now() AS updated_at FROM t1);" &
 #watch "ps -ex | grep psql"
@@ -34,7 +46,10 @@ clean:
 
 fullTest: downloadNMXenDOF classify results
 
-test: currentTask
+test: currentTask test_http
+
+test_http:
+	curl "http://api3.localhost/catalogonoms/nmx/ramas"
 
 
 testClassification: classify results
@@ -58,7 +73,7 @@ results: ${FUENTE} ${TITULARESNMXCLASIFICADOS}
 
 	@read -n 1
 	@clear
-	
+
 
 
 classify: ${FUENTE}

@@ -1,18 +1,46 @@
 # Diario Oficial de la Federación / Normas Mexicanas - API
-Copia de la Base de Datos del Diario Oficial de la Federación. Paquete de Laravel 5.
+Copia de la Base de Datos del Diario Oficial de la Federación. Paquete de Laravel5. Este paquete descarga el Diario Oficial de la Federación periodicamente y permite  las publicacicones de Normas Oficiales Mexicanas (NOM) y Normas Mexicanas (NMX) y su estado actual.
 
 ## Tabla de Contenido
-* [Descripción][#descripcion]
 * [Instalación](#instalacion)
 * [Agredecimientos](#agradecimientos)
 * [Licencia](#licencia)
 
-## Descripción
-Este modulo descargar el Diario Oficial de la Federeción periodicamente y permite consultar las publicacicones de Normas Oficiales Mexicanas (NOM) y Normas Mexicanas (NMX).
+## Dependencias
+* PostgreSQL 10
+  * PLPython3u `sudo apt-get install postgresql-plpython-10`
+* PHP 7.2
+* [csvquery](https://pypi.org/project/csvquerytool/) `pip3 install csvquerytool`
+* Phyton3
+   * [NLTK](https://www.nltk.org/) `pip3 install -U nltk`
+* Laravel5
+* http://diariooficial.gob.mx/WS_getDiarioFecha.php
+* http://diariooficial.gob.mx/BB_menuPrincipal.php
+* http://diariooficial.gob.mx/WS_getDiarioPDF.php
+* http://diariooficial.gob.mx/BB_DetalleEdicion.php
+* http://diariooficial.gob.mx/WS_getDiarioFull.php
+* http://diariooficial.gob.mx/nota_detalle_popup.php
+
+ERROR:  language "plpython3u" does not exist
+```
+
+
+```
+
+ERROR:  role "admin_catalogonoms" does not exist
+```
+create role admin_catalogonoms with password 'secret';
+create database ${MYAPI} with owner admin_catalogonoms;
+```
+
+```
+CREATE EXTENSION plpython3u;
+```
+
 
 ### Modulos extras contenidos
-* <a target="_blank" href="http://noms.imco.org.mx">Catalogo de NOMs</a>
-* <a target="_blank" href="http://nmx.imco.org.mx">Catalogo de NMX</a>
+* <a target="\_blank" href="http://noms.imco.org.mx">Catalogo de NOMs</a>
+* <a target="\_blank" href="http://nmx.imco.org.mx">Catalogo de NMX</a>
 
 ### Nodos de acceso
 Este API utiliza los siguientes Idendificadores de Recurso Uniforme (URL) para actualizar la Base de Datos:
@@ -34,6 +62,115 @@ http://diariooficial.gob.mx/BB_menuPrincipal.php?day=08&month=09&year=2014
 Uno de los nodos para consultar las notas devuelve el resultado con una codificación de carácteres incorrecta. El otro las devuelve correctamente codificadas pero se han identificado *notas* que existen en el primer nodo más no en el segundo.
 
 ## Instalación
+
+Este paquete se instala en una aplicación de Laravel. Para instalar laravel y crear una nueva aplicaicón consulta la [documentación de Laravel5](https://laravel.com/docs/5.6/installation)
+
+### 1. Lis
+
+#### 1.A Desarrollo
+
+Si se desea instalar el paquete con fines de desarrollo, para visualizar los cambios en cuanto se realicen, es posible clonar el repositorio e indicarle a composer desde dónde ha de leer las clases, el el archivo `composer.json` la información para cargar las clases del paquete:
+
+```
+...
+"autoload": {
+  ...
+  "psr-4": {
+    ...
+    "IMCO\\CatalogoNOMsApi\\" :"/path/to/catalogonoms-api/src/"
+    ...
+  }
+  ...
+}
+...
+```
+#### 1.B Producción/Stagging
+
+En caso de que le paquete se vaya a instalar en un entorno de desarrollo o producción, utilizando la versión que esté publicada, es necesario agregar el repositorio correspondiente a la configuración de dependencias:
+
+
+```
+...
+"repositories": [
+    ...
+    {
+        "type": "git",
+        "url": "https://github.com/imco/dof-api.git"
+    }
+    ...
+],
+...
+"require-dev": {
+    ...
+    "imco/catalogonoms-api": "*",
+    ...
+},
+...
+```
+
+Alternativamente se puede instalar el paquete ejecutando mediante composer:
+
+```
+cd api
+../composer.phar config repositories.catalogonoms-api git ssh://dev.imco.org.mx/var/git/catalogonoms-api.git
+../composer.phar require imco/catalogonoms-api:master
+```
+
+### 2. Carga el Service Provider
+
+En el archivo `config/app.php` agregar el Service Provider del paquete.
+
+
+```
+'providers' => [
+      ...
+      /*
+       * Package Service Providers...
+       */
+      ...
+
+      IMCO\CatalogoNOMsApi\CatalogoNOMsApiServiceProvider::class,
+      ...
+  ]
+```
+
+Es necesario volver a generar las clases del autoload
+```
+../composer.phar dump-autoload
+```
+
+### 3. Publicar los assets del paquete
+
+`php artisan vendor:publish`
+
+### 4. Configura las variables de ambiente
+
+En el archivo `.env` de la aplicación de Laravel se ha de configurar el ambiente de la Base de Datos utilizando el prefijo `CN` en las variables de ambiente, de no existir el archivo puedes utilizar `.env.example` cómo guia, ejemplo:
+    CNDB_DRIVER=pgsql
+    CNDB_HOST=localhost
+    CNDB_DATABASE=homestead
+    CNDB_USERNAME=homestead
+    CNDB_PASSWORD=secret
+    CNDB_PORT=5432
+
+Si se omite el prefijo `CN`, el paquete intentará conectarse utilizando las variables default, i.e.:
+
+    DB_DRIVER=pgsql
+    DB_HOST=localhost
+    DB_DATABASE=homestead
+    DB_USERNAME=homestead
+    DB_PASSWORD=secret
+    DB_PORT=5432
+
+En cuyo caso al nombre de las tablas generadas se les incluirá el prefijo `catalognoms_` para poder distinguirlas de cualquier otra tabla que se encuentre en la misma base de datos
+
+### 5. Ejecuta las migraciones
+
+`php artisan migrate`
+
+### 6. Inicializar Base de Datos
+`php artisan db:seed --class="IMCO\CatalogoNOMsApi\CatalogoNOMsDatabaseSeeder"`
+
 
 ### Base de datos inicial
 Se puede descargar un respaldo de la Base de Datos (hasta )
@@ -58,28 +195,6 @@ y dentro del método `schedule`:
 
 Agregar la siguiente entrada en Cron
 `* * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1`
-
-### Base de datos
-
-En el archivo `.env` de la aplicación de Laravel se ha de configurar el ambiente de la Base de Datos utilizando el prefijo `CN` en las variables de ambiente, ejemplo:
-
-    CNDB_DRIVER=pgsql
-    CNDB_HOST=localhost
-    CNDB_DATABASE=homestead
-    CNDB_USERNAME=homestead
-    CNDB_PASSWORD=secret
-    CNDB_PORT=5432
-
-Si se omite el prefijo `CN`, el paquete intentará conectarse utilizando las variables default, i.e.:
-
-    DB_DRIVER=pgsql
-    DB_HOST=localhost
-    DB_DATABASE=homestead
-    DB_USERNAME=homestead
-    DB_PASSWORD=secret
-    DB_PORT=5432
-
-En cuyo caso al nombre de las tablas generadas se les incluirá el prefijo `catalognoms_` para poder distinguirlas de cualquier otra tabla que se encuentre en la misma base de datos
 
 ### Analytics
 

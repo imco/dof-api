@@ -24,7 +24,7 @@ class CreateNormasMencionesTable extends Migration
             //$table->index()
         });
 
-        DB::connection($this->connection)->statement("create view catalogonoms_view_normas_menciones as SELECT DISTINCT * FROM (select clave, mencion from catalogonoms_normas_menciones UNION SELECT clave, clave as mencion from catalogonoms_normas_vigentes) t1;");
+        // DB::connection($this->connection)->statement("create view catalogonoms_view_normas_menciones as SELECT DISTINCT * FROM (select clave, mencion from catalogonoms_normas_menciones UNION SELECT clave, clave as mencion from catalogonoms_normas_vigentes) t1;");
     }
 
     /**
@@ -34,7 +34,7 @@ class CreateNormasMencionesTable extends Migration
      */
     public function down()
     {
-        DB::connection($this->connection)->statement('DROP VIEW catalogonoms_view_normas_menciones');
+        // DB::connection($this->connection)->statement('DROP VIEW catalogonoms_view_normas_menciones');
         Schema::connection($this->connection)->drop('normas_menciones');
     }
 }
