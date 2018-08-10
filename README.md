@@ -113,7 +113,7 @@ Alternativamente se puede instalar el paquete ejecutando mediante composer:
 ```
 cd api
 ../composer.phar config repositories.catalogonoms-api git ssh://dev.imco.org.mx/var/git/catalogonoms-api.git
-../composer.phar require imco/catalogonoms-api:master
+../composer.phar require imco/catalogonoms-api:dev-nmx
 ```
 
 ### 2. Carga el Service Provider
@@ -134,14 +134,13 @@ En el archivo `config/app.php` agregar el Service Provider del paquete.
   ]
 ```
 
-Es necesario volver a generar las clases del autoload
-```
-../composer.phar dump-autoload
-```
-
 ### 3. Publicar los assets del paquete
 
-`php artisan vendor:publish`
+Publicar los documentos de los proveedores y limpiar el cache de configuración
+```
+php artisan vendor:publish
+../composher.phar config:cache
+```
 
 ### 4. Configura las variables de ambiente
 
