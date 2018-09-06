@@ -47,7 +47,7 @@ class DOFClientController extends Controller {
 	/** Busca los 5 diarios más recientes de los que aún no se han obtenido las notas y los inserta en la base de datos, la inserción se hace por bloque de notas para asegurar que se ha insertado el diario completo
 	**/
 	public static function fillNotes($batchSize=5){
-		$diarios = DofDiario::select('dof_diarios.cod_diario')->leftJoin('dof_notas', 'dof_notas.cod_diario', '=', 'dof_diarios.cod_diario')
+		$diarios = DofDiario::select('dof_diarios.*')->leftJoin('dof_notas', 'dof_notas.cod_diario', '=', 'dof_diarios.cod_diario')
 		->where(function($query){
 			$query->whereNull('cod_nota')
 			->where('invalid', '=', false);
@@ -74,7 +74,8 @@ class DOFClientController extends Controller {
 
 		foreach($diarios AS $diario){
 			$diario->invalid = NULL;
-			if (!$diario->availablePdf){
+			if ($diario->availablePdf == null){
+				// var_dump($diario);
 				$diario->availablePdf = $diario->getAvailablePdf();
 				$diario->save();
 			}

@@ -47,7 +47,7 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 */
 
 		$result = array();
-		
+
 		$diario = json_decode(DOFClientController::http_get('http://diariooficial.gob.mx/BB_DetalleEdicion.php?cod_diario='.$this->cod_diario));
 
 		print_r('http://diariooficial.gob.mx/BB_DetalleEdicion.php?cod_diario='.$this->cod_diario . "\n");
@@ -70,7 +70,7 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 								if ($matches){
 									$decretoFull = $matches[0];
 									$decretoFull = $testHTML = preg_replace('/(&#\d{4});?/', '\1;', $decretoFull);
-									
+
 									try{
 										$decretoDOM = new \DOMDocument();
 										libxml_use_internal_errors(true);
@@ -118,7 +118,7 @@ http://diariooficial.gob.mx/nota_detalle_popup.php?codigo=5308662
 		$date = DateTime::createFromFormat('Y-m-d', $this->fecha);
 
 		$diario2 = json_decode(DOFClientController::http_get('http://diariooficial.gob.mx/WS_getDiarioFull.php?year='.$date->format('Y').'&month='.$date->format('m').'&day='.$date->format('d')));
-		
+
 
 		print_r('http://diariooficial.gob.mx/WS_getDiarioFull.php?year='.$date->format('Y').'&month='.$date->format('m').'&day='.$date->format('d') . "\n");
 		if($diario2->ejemplares){
