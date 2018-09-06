@@ -12,6 +12,11 @@ class CatalogoNOMsDatabaseSeeder extends Seeder
      */
     public function run()
     {
+
+        $this->call('IMCO\CatalogoNOMsApi\ClasificacionSeeder');
+        $this->call('IMCO\CatalogoNOMsApi\MencionEnNotaSeeder');
+        $this->call('IMCO\CatalogoNOMsApi\NormasVigentesSeeder');
         $this->call('IMCO\CatalogoNOMsApi\DOFDiariosSeeder');
+        $this->call('IMCO\CatalogoNOMsApi\NotesSeeder');
 	}
 }

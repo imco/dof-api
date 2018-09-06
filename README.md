@@ -1,4 +1,7 @@
 # Diario Oficial de la Federación / Normas Mexicanas - API
+
+Paquete para [Laravel5](https://laravel.com/docs/5.7#installing-laravel).
+
 Copia de la Base de Datos del Diario Oficial de la Federación. Paquete de Laravel5. Este paquete descarga el Diario Oficial de la Federación periodicamente y permite  las publicacicones de Normas Oficiales Mexicanas (NOM) y Normas Mexicanas (NMX) y su estado actual.
 
 ## Tabla de Contenido
@@ -8,7 +11,10 @@ Copia de la Base de Datos del Diario Oficial de la Federación. Paquete de Larav
 
 ## Dependencias
 * PostgreSQL 10
-  * PLPython3u `sudo apt-get install postgresql-plpython-10`
+  * PLPython3u
+  ```
+  sudo apt-get install postgresql-plpython-10
+  ```
 * PHP 7.2
 * [csvquery](https://pypi.org/project/csvquerytool/) `pip3 install csvquerytool`
 * Phyton3
@@ -65,9 +71,15 @@ Uno de los nodos para consultar las notas devuelve el resultado con una codifica
 
 Este paquete se instala en una aplicación de Laravel. Para instalar laravel y crear una nueva aplicaicón consulta la [documentación de Laravel5](https://laravel.com/docs/5.6/installation)
 
-### 1. Lis
+#### 1.A Default
 
-#### 1.A Desarrollo
+Esta distribución cuanta con un Makefile para automatizar al instalación. Creara una nueva aplicación *apiv3* e el directorio padre
+
+```
+make
+```
+
+#### 1.B Desarrollo
 
 Si se desea instalar el paquete con fines de desarrollo, para visualizar los cambios en cuanto se realicen, es posible clonar el repositorio e indicarle a composer desde dónde ha de leer las clases, el el archivo `composer.json` la información para cargar las clases del paquete:
 
@@ -84,7 +96,7 @@ Si se desea instalar el paquete con fines de desarrollo, para visualizar los cam
 }
 ...
 ```
-#### 1.B Producción/Stagging
+#### 1.C Producción/Stagging
 
 En caso de que le paquete se vaya a instalar en un entorno de desarrollo o producción, utilizando la versión que esté publicada, es necesario agregar el repositorio correspondiente a la configuración de dependencias:
 
@@ -115,6 +127,7 @@ cd api
 ../composer.phar config repositories.catalogonoms-api git ssh://dev.imco.org.mx/var/git/catalogonoms-api.git
 ../composer.phar require imco/catalogonoms-api:dev-nmx
 ```
+
 
 ### 2. Carga el Service Provider
 
@@ -176,6 +189,10 @@ Se puede descargar un respaldo de la Base de Datos (hasta )
 
 ### Clasificador
 El clasificador es un script de Python3, el cuál utiliza la libreria NLTK http://www.nltk.org/ junto con el paquete "punkt"
+
+
+>> # Mi Mismo: ¿es el único script de python utilizado?
+
 
 ### Actualización automática de la Base de Datos
 Para mantener actualizada la Base de datos se hace uso de la funcionalidad de tareas programadas de Laravel, para ejecutarlo es necesario agregar las siguientes lineas en `app/Console/Kernel.php`

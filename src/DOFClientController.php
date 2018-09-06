@@ -47,25 +47,37 @@ class DOFClientController extends Controller {
 	/** Busca los 5 diarios más recientes de los que aún no se han obtenido las notas y los inserta en la base de datos, la inserción se hace por bloque de notas para asegurar que se ha insertado el diario completo
 	**/
 	public static function fillNotes($batchSize=5){
-		$diarios = DofDiario::select('dof_diarios.cod_diario')->leftJoin('dof_notas', 'dof_notas.cod_diario', '=', 'dof_diarios.cod_diario')->whereNull('cod_nota')->where('invalid', '=', false)->orderBy('fecha', 'desc')->limit($batchSize)->get();
+		$diarios = DofDiario::select('dof_diarios.cod_diario')->leftJoin('dof_notas', 'dof_notas.cod_diario', '=', 'dof_diarios.cod_diario')
+		->where(function($query){
+			$query->whereNull('cod_nota')
+			->where('invalid', '=', false);
+		})
+		->orWhere(function($query){
+			$query->whereNull('cod_nota')
+			->whereNull('invalid')	;
+		})
+		->orderBy('fecha', 'desc')->limit($batchSize)->get();
 
-		$faltantes = DofDiario::select('dof_diarios.cod_diario')->leftJoin('dof_notas', 'dof_notas.cod_diario', '=', 'dof_diarios.cod_diario')->whereNull('cod_nota')->where('invalid', '=', false)->count();
+		$faltantes = $diarios->count();
 
 		print_r("Faltan $faltantes diarios por analizar.\n");
 		$dofClient = new DOFClientController();
 
-		$cod_diario = array();
-		foreach($diarios AS $diario){
-			array_push($cod_diario, $diario->cod_diario);
-		}
+		// $cod_diario = array();
+		// foreach($diarios AS $diario){
+		// 	array_push($cod_diario, $diario->cod_diario);
+		// }
+		//
+		// $diarios = DofDiario::findMany($cod_diario);
 
-		$diarios = DofDiario::findMany($cod_diario);
-
+		print_r("Se procesarán {$diarios->count()} diarios\n");
 
 		foreach($diarios AS $diario){
 			$diario->invalid = NULL;
-			$diario->availablePdf = $diario->getAvailablePdf();
-			$diario->save();
+			if (!$diario->availablePdf){
+				$diario->availablePdf = $diario->getAvailablePdf();
+				$diario->save();
+			}
 		}
 
 		//$result = [];
@@ -95,6 +107,11 @@ class DOFClientController extends Controller {
 	        			}
 	        		}
 	        	}
+
+						if (DofNota::where('cod_nota',$note['cod_nota'])->count() > 0){
+							unset($newNotes[$key]);
+							print_r ("Nota {$note['cod_nota']} duplicada ignorada");
+						}
 	        }
 	        print_r("Inserting...\n");
 	        if (count($newNotes) > 0 ){
@@ -250,10 +267,10 @@ class DOFClientController extends Controller {
 		        	}
 		        	print_r($note['titulo']. "\n");
 		        }
-
+// Está insertando clavs duplicadas, ¿por qué?
 		        if (count($newNotes) > 0 ){
 			        $newNotes = array_values($newNotes);
-			        DofNota::insert($newNotes);
+			        DofNota::firstOrCreate($newNotes);
 			        $diario->invalid=false;
 			    }elseif ($diario->availablePdf == null){
 			    	$diario->invalid=true;

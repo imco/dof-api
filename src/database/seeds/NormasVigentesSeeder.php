@@ -15,7 +15,7 @@ class NormasVigentesSeeder extends Seeder
      */
     public function run()
     {
-        
+
         $file = base_path('public/vendor/imco/catalogonoms-api') . '/NMX_Vigentes.xlsx';
         $input = str_getcsv(`xlsx2csv -d 'tab' -f %d-%m-%Y -m -e -n 'Matriz NMX' "$file" | tail -n+2`, "\n");
 
@@ -33,17 +33,17 @@ class NormasVigentesSeeder extends Seeder
                 'rama_economica' =>$data[7],
                 'ctnn' => strlen($data[8])>0 ? array_map('trim', explode(";", $data[8])) : null,
                 'onn' =>strlen($data[9])> 0 ? array_map('trim', explode(";", $data[9])) : null,
-                'ctnn_slug' => strlen($data[8])>0 ? array_map('\Slug\Slugifier::slugify', array_map('trim', explode(";", $data[8])), array_fill(0,count(explode(";", $data[8])), '-'), array_fill(0,count(explode(";", $data[8])), True)): null,
-                'onn_slug' => strlen($data[9])>0 ? array_map('\Slug\Slugifier::slugify', array_map('trim', explode(";", $data[9])), array_fill(0,count(explode(";", $data[8])), '-'), array_fill(0,count(explode(";", $data[9])), True)) : null,
-                
-                'rama_economica_slug' => \Slug\Slugifier::slugify($data[7], '-', True)
+                'ctnn_slug' => strlen($data[8])>0 ? array_map([(new \Slug\Slugifier()), 'slugify'], array_map('trim', explode(";", $data[8])), array_fill(0,count(explode(";", $data[8])), '-'), array_fill(0,count(explode(";", $data[8])), True)): null,
+                'onn_slug' => strlen($data[9])>0 ? array_map([(new \Slug\Slugifier()), 'slugify'], array_map('trim', explode(";", $data[9])), array_fill(0,count(explode(";", $data[8])), '-'), array_fill(0,count(explode(";", $data[9])), True)) : null,
+
+                'rama_economica_slug' => (new \Slug\Slugifier())->slugify($data[7], '-', True)
             );
 
             var_dump($formatedData);
 
             NormaVigente::create($formatedData);
         }
-    
+
 
 /*        $count = 0;
 

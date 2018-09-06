@@ -55,7 +55,7 @@ class DofNota extends Model
 			if ($matches){
 				$decretoFull = $matches[0];
 				$decretoFull = $testHTML = preg_replace('/(&#\d{4});?/', '\1;', $decretoFull);
-				
+
 				try{
 					$decretoDOM = new \DOMDocument();
 					libxml_use_internal_errors(true);

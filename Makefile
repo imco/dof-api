@@ -12,14 +12,20 @@ TRAININGDATA := public/nmx-knowledgeBase.csv
 INPUT := /tmp/menciones-para-clasificar.csv
 DEBUGFILE := "nmx-no-localizadas.csv"
 
+OUTPUT := ../apiv3
+WORKING_DIRECTORY := `pwd`
 
-all: currentTask
+all: install
+
+install: install-laravel add-package update-laravel
+
 
 # Instala las dependencias necesarias
 dependencies:
-	sudo apt install python3 python3-pip
-	pip3 install -U nltk
-	printf "import nltk \nnltk.download('punkt')\n" | python3
+	sudo apt-get install postgresql-plpython-10 && \
+	sudo apt install python3 python3-pip && \
+	pip3 install -U nltk && \
+	(printf "import nltk \nnltk.download('punkt')\n" | python3)
 
 
 
@@ -41,8 +47,8 @@ downloadNMXenDOF:
 	psql -d catalogonomsv2 -h dev.imco.org.mx -c"\COPY catalogonoms_dof_notas TO public/catalogonoms_dof_notas.csv"
 
 
-clean:
-	rm nmx-en-dof.csv
+#clean:
+#	rm nmx-en-dof.csv
 
 fullTest: downloadNMXenDOF classify results
 
@@ -81,3 +87,23 @@ classify: ${FUENTE}
 	csvtool col 2 ${FUENTE} | ./bin/clasificador.py --match ${MATCHREGEX} > ${TITULARESNMXCLASIFICADOS}
 #	csvtool col 4 ${FUENTE} | ./bin/clasificador.py --match "(nmx-[^\s((\)|\.)+$)]+)" > ${TITULARESNMXCLASIFICADOS}
 	csvquery titulares-nmx-clasificados.csv nmx-activas.csv -q 'SELECT clave FROM csv2 EXCEPT SELECT clave from csv;' > ${DEBUGFILE}
+
+
+
+
+
+install-laravel:
+	if [ ! -d $(OUTPUT) ]; then composer create-project laravel/laravel $(OUTPUT); fi;
+
+add-package:
+		if [ `grep 'IMCO\CatalogoNOMsApi\CatalogoNOMsApiServiceProvider' $(OUTPUT)/config/app.php | wc -l` == 0 ]; then sed -ie '146i\\tIMCO\\CatalogoNOMsApi\\CatalogoNOMsApiServiceProvider::class,' $(OUTPUT)/config/app.php; fi
+
+		@echo -e "import json\nfrom pprint import pprint\nimport inspect, os\n\nwith open('$(OUTPUT)/composer.json', 'r+') as data_file:\n\tdata = json.load(data_file)\n\tif not 'IMCO\\\\\\CatalogoNOMsApi\\\\\\' in json.dumps(data['autoload']['psr-4']):\n\t\tdata['autoload']['psr-4']['IMCO\\\\\\CatalogoNOMsApi\\\\\\']= '$(WORKING_DIRECTORY)';\n\tdata_file.seek(0)\n\tdata_file.write(json.dumps(data,sort_keys=True, indent=4))\n" | /usr/bin/python3
+
+update-laravel:
+	cd $(OUTPUT); composer update; php artisan vendor:publish;
+
+clean:
+	rm -rf $(OUTPUT)
+
+.PHONY: install-laravel add-package update-laravel

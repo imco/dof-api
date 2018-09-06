@@ -1,5 +1,7 @@
 <?php namespace IMCO\CatalogoNOMsApi;
-
+/**
+*
+**/
 use Illuminate\Support\ServiceProvider;
 use \Config;
 
@@ -16,7 +18,8 @@ class CatalogoNOMsApiServiceProvider extends ServiceProvider {
 
 		$this->publishes([__DIR__.'/database/data' => base_path('database/data')]);
 		$this->publishes([__DIR__.'/database/migrations' => base_path('database/migrations')]);
-		$this->publishes([__DIR__.'/database/seeds' => base_path('database/seeds')]);
+		$this->publishes([__DIR__.'/database/sql' => base_path('database/sql')]);
+		//$this->publishes([__DIR__.'/database/seeds' => base_path('database/seeds')]);
 		//$this->publishes([__DIR__.'/../public/' => base_path('public/vendor/imco/catalogonoms-api/')]);
 		$this->publishes([__DIR__.'/../public/nmx-knowledgeBase.csv' => base_path('public/vendor/imco/catalogonoms-api/nmx-knowledgeBase.csv')]);
 		$this->publishes([__DIR__.'/../public/Matriz NMX.xlsx' => base_path('public/vendor/imco/catalogonoms-api/NMX_Vigentes.xlsx')]);
